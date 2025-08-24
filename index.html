@@ -3,25 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dasbor Bisnis Sate Maranggi</title>
+  <title>Dasbor Bisnis Sate Maranggi (Firebase)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
   <style>
     body { font-family: 'Inter', sans-serif; }
     .content-section { display: none; }
     .content-section.active { display: block; }
     .sidebar-link.active { background-color: #f59e0b; color: white; }
-    #sidebar-overlay { transition: opacity 0.3s ease-in-out; }
-    .modal { transition: opacity 0.3s ease-in-out; }
-    .chart-container { position: relative; width: 100%; height: 300px; max-height: 40vh; margin-top: 2rem; }
   </style>
 </head>
 <body class="bg-stone-100 text-stone-800">
-  
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden"></div>
+  div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden"></div>
     <div class="flex">
         <!-- Sidebar -->
         <aside id="sidebar" class="bg-stone-800 text-white w-64 min-h-screen p-4 fixed md:relative transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-30">
@@ -252,7 +247,7 @@
     import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
-    apiKey: "AIzaSyC_Z8QS_mNbExzIoppP_0EbABM4Y1eeVTQ",
+      apiKey: "AIzaSyC_Z8QS_mNbExzIoppP_0EbABM4Y1eeVTQ",
     authDomain: "dasbor-maranggiin.firebaseapp.com",
     projectId: "dasbor-maranggiin",
     storageBucket: "dasbor-maranggiin.firebasestorage.app",
@@ -264,153 +259,46 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // === DOM Cache ===
-    const DOMElements = {
-      txForm: document.getElementById('transaction-form'),
-      txDate: document.getElementById('tx-date'),
-      txType: document.getElementById('tx-type'),
-      txCategory: document.getElementById('tx-category'),
-      txAmount: document.getElementById('tx-amount'),
-      txList: document.getElementById('transaction-list'),
-      preOrderForm: document.getElementById('pre-order-form'),
-      preOrderList: document.getElementById('pre-order-list'),
-      sidebarLinks: document.querySelectorAll('.sidebar-link'),
-      contentSections: document.querySelectorAll('.content-section'),
-      menuBtn: document.getElementById('menu-btn'),
-      sidebar: document.getElementById('sidebar'),
-      sidebarOverlay: document.getElementById('sidebar-overlay'),
-      headerTitle: document.getElementById('header-title')
-    };
-
-    // === NAVIGATION ===
-    function setupNavigation() {
-      DOMElements.sidebarLinks.forEach(link => {
-        link.addEventListener('click', e => {
-          e.preventDefault();
-          const targetId = link.getAttribute('href').substring(1);
-          DOMElements.contentSections.forEach(sec => sec.classList.remove('active'));
-          document.getElementById(targetId).classList.add('active');
-
-          DOMElements.sidebarLinks.forEach(l => l.classList.remove('active'));
-          link.classList.add('active');
-
-          DOMElements.headerTitle.textContent = link.textContent.trim();
-          if (window.innerWidth < 768) toggleSidebar();
-        });
-      });
-
-      DOMElements.menuBtn.addEventListener('click', toggleSidebar);
-      DOMElements.sidebarOverlay.addEventListener('click', toggleSidebar);
-    }
-
-    function toggleSidebar() {
-      DOMElements.sidebar.classList.toggle('-translate-x-full');
-      DOMElements.sidebarOverlay.classList.toggle('hidden');
-    }
-
-    // === TRANSAKSI ===
-    let transactions = [];
-
-    async function addTransaction(e) {
-      e.preventDefault();
-      const tx = {
-        date: DOMElements.txDate.value,
-        type: DOMElements.txType.value,
-        category: DOMElements.txCategory.value,
-        amount: parseInt(DOMElements.txAmount.value) || 0
-      };
+    // ===== CRUD TRANSAKSI =====
+    async function saveTransaction(tx) {
       await addDoc(collection(db, "transactions"), tx);
-      await loadTransactions();
-      DOMElements.txForm.reset();
     }
-
-    async function loadTransactions() {
-      const querySnapshot = await getDocs(collection(db, "transactions"));
-      transactions = [];
-      querySnapshot.forEach(docSnap => {
-        transactions.push({ id: docSnap.id, ...docSnap.data() });
-      });
-      renderTransactions();
+    async function getTransactions() {
+      const snap = await getDocs(collection(db, "transactions"));
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
     }
-
     async function deleteTransaction(id) {
       await deleteDoc(doc(db, "transactions", id));
-      await loadTransactions();
     }
 
-    function renderTransactions() {
-      DOMElements.txList.innerHTML = '';
-      transactions.forEach(tx => {
-        const card = document.createElement('div');
-        card.className = 'bg-white p-4 rounded-lg shadow';
-        card.innerHTML = `
-          <p class="font-bold">${tx.date} - ${tx.category}</p>
-          <p>${tx.type} : Rp ${tx.amount.toLocaleString()}</p>
-          <button class="text-red-500" onclick="deleteTransaction('${tx.id}')">Hapus</button>
-        `;
-        DOMElements.txList.appendChild(card);
+    // ===== CRUD PREORDER =====
+    async function savePreOrder(po) {
+      await addDoc(collection(db, "preorders"), po);
+    }
+    async function getPreOrders() {
+      const snap = await getDocs(collection(db, "preorders"));
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    }
+    async function completePreOrder(id, order) {
+      await updateDoc(doc(db, "preorders", id), { status: "selesai" });
+      await addDoc(collection(db, "transactions"), {
+        date: new Date().toISOString().split('T')[0],
+        type: "Pemasukan",
+        category: "Penjualan Pre-order",
+        amount: order.amount
       });
     }
 
-    // === PRE-ORDER ===
-    let preOrders = [];
-
-    async function addPreOrder(e) {
-      e.preventDefault();
-      const order = {
-        customer: DOMElements.preOrderForm.querySelector('#po-customer').value,
-        date: DOMElements.preOrderForm.querySelector('#po-date').value,
-        details: DOMElements.preOrderForm.querySelector('#po-details').value,
-        amount: parseInt(DOMElements.preOrderForm.querySelector('#po-amount').value) || 0,
-        status: "proses"
-      };
-      await addDoc(collection(db, "preorders"), order);
-      await loadPreOrders();
-      DOMElements.preOrderForm.reset();
-    }
-
-    async function loadPreOrders() {
-      const querySnapshot = await getDocs(collection(db, "preorders"));
-      preOrders = [];
-      querySnapshot.forEach(docSnap => {
-        preOrders.push({ id: docSnap.id, ...docSnap.data() });
-      });
-      renderPreOrders();
-    }
-
-    function renderPreOrders() {
-      DOMElements.preOrderList.innerHTML = '';
-      preOrders.forEach(po => {
-        const card = document.createElement('div');
-        card.className = 'bg-white p-4 rounded-lg shadow';
-        card.innerHTML = `
-          <h4 class="font-bold">${po.customer}</h4>
-          <p>${po.details}</p>
-          <p>Tgl: ${po.date}</p>
-          <p>Total: Rp ${po.amount.toLocaleString()}</p>
-          <p>Status: ${po.status}</p>
-        `;
-        DOMElements.preOrderList.appendChild(card);
-      });
-    }
-
-    // === INIT ===
+    // ===== GANTI BAGIAN INIT DARI CODE MAS =====
     async function initialize() {
+      transactions = await getTransactions();
+      preOrders = await getPreOrders();
       setupNavigation();
-      DOMElements.txDate.valueAsDate = new Date();
-      DOMElements.preOrderForm.querySelector('#po-date').valueAsDate = new Date();
-      
-      DOMElements.txForm.addEventListener('submit', addTransaction);
-      DOMElements.preOrderForm.addEventListener('submit', addPreOrder);
-
-      await loadTransactions();
-      await loadPreOrders();
+      renderAll();
+      updateTargetSlider();
     }
 
     initialize();
-
-    // Biar fungsi bisa dipanggil inline onclick
-    window.deleteTransaction = deleteTransaction;
   </script>
 </body>
 </html>
