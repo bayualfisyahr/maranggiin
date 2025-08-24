@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maranggi.in</title>
+    <title>Dasbor Bisnis Sate Maranggi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,7 +25,7 @@
     <div class="flex">
         <!-- Sidebar -->
         <aside id="sidebar" class="bg-stone-800 text-white w-64 min-h-screen p-4 fixed md:relative transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-30">
-            <h1 class="text-2xl font-bold text-amber-400 mb-8 text-center">Maranggi.in</h1>
+            <h1 class="text-2xl font-bold text-amber-400 mb-8 text-center">Sate Maranggi</h1>
             <nav class="flex flex-col space-y-2">
                 <a href="#bisnis-plan" class="sidebar-link active flex items-center py-2 px-4 rounded-lg hover:bg-amber-500 transition">
                     <span class="mr-3">📄</span> Bisnis Plan
@@ -57,10 +57,10 @@
             <main class="p-6 md:p-8 pb-16">
                 <!-- Section: Bisnis Plan -->
                 <section id="bisnis-plan" class="content-section active">
-                    <h2 class="text-3xl md:text-4xl font-bold mb-6">Rencana Bisnis Maranggi.in</h2>
+                    <h2 class="text-3xl md:text-4xl font-bold mb-6">Rencana Bisnis Strategis</h2>
                     <div class="space-y-8">
                         <div class="bg-white p-6 rounded-lg shadow">
-                            <h3 class="text-2xl font-bold mb-4">Analisis Menu & Break Event Point (BEP)</h3>
+                            <h3 class="text-2xl font-bold mb-4">Analisis Menu & Titik Impas (BEP)</h3>
                             <div id="menu-analysis-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Konten Analisis Menu Dibuat oleh JavaScript -->
                             </div>
@@ -70,7 +70,7 @@
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                 <!-- Biaya Investasi -->
                                 <div>
-                                    <h4 class="text-xl font-semibold mb-3">Biaya Investasi (Sekali)</h4>
+                                    <h4 class="text-xl font-semibold mb-3">Biaya Investasi (Sekali Bayar)</h4>
                                     <div id="investment-cost-container" class="space-y-2">
                                         <!-- Diisi oleh JS -->
                                     </div>
@@ -140,15 +140,15 @@
                             <p id="target-bulanan" class="text-3xl font-bold text-amber-600">Rp 0</p>
                         </div>
                         <div class="bg-white p-4 rounded-lg shadow">
-                            <h3 class="text-lg font-semibold text-stone-500 mb-2">Laba Kotor</h3>
+                            <h3 class="text-lg font-semibold text-stone-500 mb-2">Laba Kotor Aktual</h3>
                             <p id="laba-kotor" class="text-3xl font-bold text-blue-600">Rp 0</p>
                         </div>
                         <div class="bg-white p-4 rounded-lg shadow">
-                            <h3 class="text-lg font-semibold text-stone-500 mb-2">Laba Bersih</h3>
+                            <h3 class="text-lg font-semibold text-stone-500 mb-2">Laba Bersih Aktual</h3>
                             <p id="laba-bersih" class="text-3xl font-bold text-green-600">Rp 0</p>
                         </div>
                         <div class="bg-white p-4 rounded-lg shadow">
-                            <h3 class="text-lg font-semibold text-stone-500 mb-2">Kekurangan menuju Target</h3>
+                            <h3 class="text-lg font-semibold text-stone-500 mb-2">Kekurangan Menuju Target</h3>
                             <p id="kekurangan-target" class="text-3xl font-bold text-red-500">Rp 0</p>
                         </div>
                     </div>
@@ -249,33 +249,21 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, setDoc, deleteDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, setDoc, deleteDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
         // ===================================================================================
         // KONFIGURASI FIREBASE - PENTING!
         // Ganti dengan konfigurasi Firebase Anda dari Langkah 1 di panduan.
         // ===================================================================================
         const firebaseConfig = {
-        <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-        apiKey: "AIzaSyC_Z8QS_mNbExzIoppP_0EbABM4Y1eeVTQ",
-        authDomain: "dasbor-maranggiin.firebaseapp.com",
-        projectId: "dasbor-maranggiin",
-        storageBucket: "dasbor-maranggiin.firebasestorage.app",
-        messagingSenderId: "476865235556",
-        appId: "1:476865235556:web:f1dd8a2dfd93c623b1ad71",
-        measurementId: "G-QMD7ZLZ20Z"
-      };
-
-        
+          apiKey: "AIzaSyC_Z8QS_mNbExzIoppP_0EbABM4Y1eeVTQ",
+            authDomain: "dasbor-maranggiin.firebaseapp.com",
+            projectId: "dasbor-maranggiin",
+            storageBucket: "dasbor-maranggiin.firebasestorage.app",
+            messagingSenderId: "476865235556",
+            appId: "1:476865235556:web:f1dd8a2dfd93c623b1ad71",
+            measurementId: "G-QMD7ZLZ20Z"
+        };
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
@@ -867,4 +855,3 @@
     </script>
 </body>
 </html>
-
