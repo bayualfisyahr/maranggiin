@@ -209,26 +209,28 @@
     <div id="recipe-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-40 hidden items-center justify-center"></div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, getDoc, setDoc, deleteDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
+  
         // ===================================================================================
         // KONFIGURASI FIREBASE - PENTING!
         // Ganti dengan konfigurasi Firebase Anda dari Langkah 1 di panduan.
         // ===================================================================================
         const firebaseConfig = {
-        apiKey: "AIzaSyC_Z8QS_mNbExzIoppP_0EbABM4Y1eeVTQ",
-        authDomain: "dasbor-maranggiin.firebaseapp.com",
-        projectId: "dasbor-maranggiin",
-        storageBucket: "dasbor-maranggiin.firebasestorage.app",
-        messagingSenderId: "476865235556",
-        appId: "1:476865235556:web:f1dd8a2dfd93c623b1ad71",
-        measurementId: "G-QMD7ZLZ20Z"
+          apiKey: "AIzaSyC_Z8QS_mNbExzIoppP_0EbABM4Y1eeVTQ",
+            authDomain: "dasbor-maranggiin.firebaseapp.com",
+            projectId: "dasbor-maranggiin",
+            storageBucket: "dasbor-maranggiin.firebasestorage.app",
+            messagingSenderId: "476865235556",
+            appId: "1:476865235556:web:f1dd8a2dfd93c623b1ad71",
+            measurementId: "G-QMD7ZLZ20Z
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
+        const analytics = getAnalytics(app);
+        
         document.addEventListener('DOMContentLoaded', function () {
             let businessData = {};
             let transactions = [];
@@ -293,45 +295,604 @@
                 });
             }
 
-            // ... (All other functions from previous versions are here, but omitted for brevity)
-            // ... (All event listeners are here, but omitted for brevity)
-
-            // Placeholder for the full JS code
-            const allFunctionsAndListeners = `
             function toggleSidebar() { DOMElements.sidebar.classList.toggle('-translate-x-full'); DOMElements.sidebarOverlay.classList.toggle('hidden'); }
-            function renderAll() { renderTransactions(); renderRecipes(); renderMenuAnalysis(); renderCapitalPlan(); renderPreOrders(); updateDashboard(); if(document.querySelector('.content-section.active')?.id === 'laporan') { renderMonthlyReport(parseInt(DOMElements.reportMonth.value), parseInt(DOMElements.reportYear.value)); } }
-            function setupNavigation() { DOMElements.menuBtn.addEventListener('click', toggleSidebar); DOMElements.sidebarOverlay.addEventListener('click', toggleSidebar); DOMElements.sidebarLinks.forEach(link => { link.addEventListener('click', e => { e.preventDefault(); const targetId = link.getAttribute('href').substring(1); DOMElements.contentSections.forEach(s => s.classList.remove('active')); document.getElementById(targetId).classList.add('active'); DOMElements.sidebarLinks.forEach(l => l.classList.remove('active')); link.classList.add('active'); DOMElements.headerTitle.textContent = link.textContent.trim(); if (window.innerWidth < 768) toggleSidebar(); }); }); }
-            function populateCategories(selectEl, type) { selectEl.innerHTML = ''; businessData.categories[type].forEach(cat => { const option = document.createElement('option'); option.value = cat; option.textContent = cat; selectEl.appendChild(option); }); }
-            function renderTransactions() { const container = DOMElements.transactionList; container.innerHTML = ''; if (transactions.length === 0) { container.innerHTML = \`<p class="text-stone-500 italic md:col-span-3">Belum ada transaksi.</p>\`; return; } const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date)); sorted.forEach(tx => { const card = document.createElement('div'); card.className = 'bg-white p-4 rounded-lg shadow'; const isPemasukan = tx.type === 'Pemasukan'; card.innerHTML = \`<div class="flex justify-between items-start"><div><p class="font-bold">\${tx.category}</p><p class="text-sm text-stone-500">\${new Date(tx.date).toLocaleDateString('id-ID')}</p></div><p class="font-bold text-lg \${isPemasukan ? 'text-green-600' : 'text-red-600'}">\${isPemasukan ? '+' : '-'} \${formatCurrency(tx.amount)}</p></div><div class="text-right mt-2"><button data-id="\${tx.id}" class="edit-btn text-blue-500 hover:underline text-xs font-semibold">Edit</button><button data-id="\${tx.id}" class="delete-btn text-red-500 hover:underline text-xs font-semibold ml-2">Hapus</button></div>\`; container.appendChild(card); }); }
-            function updateDashboard() { const targetBulananRp = businessData.targetBulananRp || 0; DOMElements.targetBulananEl.textContent = formatCurrency(targetBulananRp); const now = new Date(); const monthlyTx = transactions.filter(tx => new Date(tx.date).getMonth() === now.getMonth() && new Date(tx.date).getFullYear() === now.getFullYear()); const totalPemasukan = monthlyTx.filter(tx => tx.type === 'Pemasukan').reduce((s, tx) => s + tx.amount, 0); const totalPengeluaran = monthlyTx.filter(tx => tx.type === 'Pengeluaran').reduce((s, tx) => s + tx.amount, 0); const totalBiayaOperasional = businessData.modal.operational.reduce((sum, item) => sum + (item.cost || 0), 0); const labaKotor = totalPemasukan - totalPengeluaran; const labaBersih = labaKotor - totalBiayaOperasional; const kekurangan = Math.max(0, targetBulananRp - totalPemasukan); DOMElements.labaKotorEl.textContent = formatCurrency(labaKotor); DOMElements.labaBersihEl.textContent = formatCurrency(labaBersih); DOMElements.kekuranganTargetEl.textContent = formatCurrency(kekurangan); updateSalesTrendChart(); }
-            function updateTargetSlider() { const targetBulananRp = businessData.targetBulananRp || 0; let avgPrice = businessData.menu.reduce((a, i) => a + i.hargaJual, 0) / businessData.menu.length; if (!isFinite(avgPrice) || avgPrice === 0) avgPrice = 30000; const requiredMonthlyPortions = targetBulananRp / avgPrice; const requiredDailyPortions = Math.ceil(requiredMonthlyPortions / businessData.hariKerjaPerBulan); DOMElements.targetHarianSlider.value = requiredDailyPortions; DOMElements.targetHarianValue.textContent = \`\${requiredDailyPortions} Porsi\`; }
-            async function addTransaction(e) { e.preventDefault(); const newTx = { date: DOMElements.txDate.value, type: DOMElements.txType.value, category: DOMElements.txCategory.value, amount: parseInt(DOMElements.txAmount.value) || 0 }; await addDoc(collection(db, "transactions"), newTx); DOMElements.txForm.reset(); DOMElements.txDate.valueAsDate = new Date(); }
-            async function deleteTransaction(id) { await deleteDoc(doc(db, "transactions", id)); }
-            function openEditModal(id) { const tx = transactions.find(t => t.id === id); DOMElements.editTxModal.innerHTML = \`<div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md m-4"><h3 class="text-2xl font-bold mb-4">Edit Transaksi</h3><form id="edit-tx-form"><input type="hidden" id="edit-tx-id" value="\${tx.id}"><div class="space-y-4"><div><label for="edit-tx-date" class="block text-sm font-bold text-stone-700 mb-1">Tanggal</label><input type="date" id="edit-tx-date" value="\${tx.date}" class="bg-stone-50 mt-1 block w-full rounded-md border-stone-300 shadow-sm" required></div><div><label for="edit-tx-category" class="block text-sm font-bold text-stone-700 mb-1">Kategori</label><select id="edit-tx-category" class="bg-stone-50 mt-1 block w-full rounded-md border-stone-300 shadow-sm"></select></div><div><label for="edit-tx-amount" class="block text-sm font-bold text-stone-700 mb-1">Jumlah (Rp)</label><input type="number" id="edit-tx-amount" value="\${tx.amount}" class="bg-stone-50 mt-1 block w-full rounded-md border-stone-300 shadow-sm" required></div></div><div class="mt-6 flex justify-end space-x-3"><button type="button" class="cancel-modal-btn bg-stone-200 text-stone-800 font-bold py-2 px-4 rounded-lg hover:bg-stone-300">Batal</button><button type="submit" class="bg-amber-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-amber-600">Simpan</button></div></form></div>\`; const catSelect = DOMElements.editTxModal.querySelector('#edit-tx-category'); populateCategories(catSelect, tx.type); catSelect.value = tx.category; DOMElements.editTxModal.classList.remove('hidden'); DOMElements.editTxModal.classList.add('flex'); }
-            async function saveEditTransaction(e) { e.preventDefault(); const id = e.target.querySelector('#edit-tx-id').value; const updatedTxData = { date: e.target.querySelector('#edit-tx-date').value, category: e.target.querySelector('#edit-tx-category').value, amount: parseInt(e.target.querySelector('#edit-tx-amount').value) || 0 }; const txRef = doc(db, "transactions", id); await updateDoc(txRef, updatedTxData); DOMElements.editTxModal.classList.add('hidden'); }
-            function renderRecipes() { DOMElements.recipeContainer.innerHTML = businessData.menu.map(item => { const c1 = item.resep.C1_content ? \`<div><h4 class="text-xl font-semibold mb-3">\${item.resep.C1_label || 'Komponen 1'}:</h4><ul class="list-disc list-inside text-stone-600 space-y-2">\${item.resep.C1_content.split('\\n').map(b => \`<li>\${b}</li>\`).join('')}</ul></div>\` : ''; const c2 = item.resep.C2_content ? \`<div><h4 class="text-xl font-semibold mb-3">\${item.resep.C2_label || 'Komponen 2'}:</h4><ul class="list-disc list-inside text-stone-600 space-y-2">\${item.resep.C2_content.split('\\n').map(s => \`<li>\${s}</li>\`).join('')}</ul></div>\` : ''; const c3 = item.resep.C3_content ? \`<div class="mt-6 pt-4 border-t md:col-span-2"><h4 class="text-xl font-semibold mb-3">\${item.resep.C3_label || 'Langkah Pembuatan'}:</h4><ol class="list-decimal list-inside text-stone-600 space-y-2">\${item.resep.C3_content.split('\\n').map(l => \`<li>\${l}</li>\`).join('')}</ol></div>\` : ''; return \`<div class="bg-white p-6 rounded-lg shadow"><div class="flex justify-between items-start"><h3 class="text-xl md:text-2xl font-bold mb-4 border-b pb-2 flex-1">\${item.name}</h3><button data-id="\${item.id}" class="kelola-resep-btn text-xs bg-stone-100 text-stone-800 font-semibold px-2 py-1 rounded hover:bg-stone-200 ml-4">Kelola</button></div><div class="grid grid-cols-1 md:grid-cols-2 gap-8">\${c1}\${c2}\${c3}</div></div>\`; }).join(''); }
-            function openRecipeModal(menuId = null) { const isNew = menuId === null; const menu = isNew ? { id: \`menu-\${Date.now()}\`, name: '', resep: { C1_label: 'Bahan Utama', C1_content: '', C2_label: 'Pelengkap', C2_content: '', C3_label: 'Langkah Pembuatan', C3_content: '' } } : businessData.menu.find(m => m.id === menuId); DOMElements.recipeModal.innerHTML = \`<div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl m-4"><h3 class="text-xl md:text-2xl font-bold mb-4">\${isNew ? 'Tambah Resep Baru' : 'Edit Resep'}</h3><form id="recipe-form" class="space-y-4 max-h-[80vh] overflow-y-auto pr-4"><input type="hidden" id="recipe-id" value="\${menu.id}"><div><label for="recipe-name" class="block text-sm font-bold text-stone-700 mb-1">Nama Menu</label><input type="text" id="recipe-name" value="\${menu.name}" class="bg-stone-50 w-full rounded" required></div><div><label class="block text-sm font-bold text-stone-700 mb-1">Judul Komponen 1</label><input type="text" id="recipe-c1-label" value="\${menu.resep.C1_label || ''}" class="bg-stone-50 w-full rounded"></div><div><label for="recipe-c1-content" class="block text-sm font-bold text-stone-700 mb-1">Isi Komponen 1 (satu baris per item)</label><textarea id="recipe-c1-content" rows="5" class="bg-stone-50 w-full rounded">\${menu.resep.C1_content || ''}</textarea></div><div><label class="block text-sm font-bold text-stone-700 mb-1">Judul Komponen 2</label><input type="text" id="recipe-c2-label" value="\${menu.resep.C2_label || ''}" class="bg-stone-50 w-full rounded"></div><div><label for="recipe-c2-content" class="block text-sm font-bold text-stone-700 mb-1">Isi Komponen 2 (satu baris per item)</label><textarea id="recipe-c2-content" rows="3" class="bg-stone-50 w-full rounded">\${menu.resep.C2_content || ''}</textarea></div><div><label class="block text-sm font-bold text-stone-700 mb-1">Judul Langkah</label><input type="text" id="recipe-c3-label" value="\${menu.resep.C3_label || ''}" class="bg-stone-50 w-full rounded"></div><div><label for="recipe-c3-content" class="block text-sm font-bold text-stone-700 mb-1">Isi Langkah (satu baris per item)</label><textarea id="recipe-c3-content" rows="5" class="bg-stone-50 w-full rounded">\${menu.resep.C3_content || ''}</textarea></div><div class="flex justify-between items-center pt-4"><div>\${!isNew ? '<button type="button" id="delete-recipe-btn" class="bg-red-100 text-red-700 font-bold py-2 px-4 rounded-lg hover:bg-red-200">Hapus Resep Ini</button>' : '<div></div>'}</div><div class="flex space-x-3"><button type="button" class="cancel-modal-btn bg-stone-200 text-stone-800 font-bold py-2 px-4 rounded-lg hover:bg-stone-300">Batal</button><button type="submit" class="bg-amber-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-amber-600">Simpan Resep</button></div></div></form></div>\`; DOMElements.recipeModal.classList.remove('hidden'); DOMElements.recipeModal.classList.add('flex'); }
-            async function saveRecipe(e) { e.preventDefault(); const id = e.target.querySelector('#recipe-id').value; const name = e.target.querySelector('#recipe-name').value; const C1_label = e.target.querySelector('#recipe-c1-label').value; const C1_content = e.target.querySelector('#recipe-c1-content').value; const C2_label = e.target.querySelector('#recipe-c2-label').value; const C2_content = e.target.querySelector('#recipe-c2-content').value; const C3_label = e.target.querySelector('#recipe-c3-label').value; const C3_content = e.target.querySelector('#recipe-c3-content').value; const menuIndex = businessData.menu.findIndex(m => m.id === id); if (menuIndex > -1) { businessData.menu[menuIndex].name = name; businessData.menu[menuIndex].resep = { C1_label, C1_content, C2_label, C2_content, C3_label, C3_content }; } else { businessData.menu.push({ id, name, hargaJual: 30000, hppBreakdown: [], resep: { C1_label, C1_content, C2_label, C2_content, C3_label, C3_content } }); } await saveData(); renderAll(); DOMElements.recipeModal.classList.add('hidden'); }
-            async function deleteRecipe(id) { if (confirm('Apakah Anda yakin ingin menghapus resep ini? Menu yang terhapus juga akan hilang dari Analisis Bisnis Plan.')) { businessData.menu = businessData.menu.filter(m => m.id !== id); await saveData(); renderAll(); DOMElements.recipeModal.classList.add('hidden'); } }
-            function renderMenuAnalysis() { DOMElements.menuAnalysisContainer.innerHTML = ''; const totalBiayaOperasional = businessData.modal.operational.reduce((sum, item) => sum + (item.cost || 0), 0); businessData.menu.forEach(item => { const hpp = (item.hppBreakdown || []).reduce((sum, i) => sum + (i.cost || 0), 0); const margin = item.hargaJual - hpp; const bep = totalBiayaOperasional / margin; const card = document.createElement('div'); card.className = 'bg-stone-50 p-4 rounded-lg border space-y-3'; card.innerHTML = \`<div class="flex justify-between items-start"><h4 class="text-xl font-bold text-amber-700">\${item.name}</h4><button data-id="\${item.id}" class="kelola-menu-btn text-xs bg-amber-100 text-amber-800 font-semibold px-2 py-1 rounded hover:bg-amber-200">Kelola</button></div><div class="flex justify-between text-sm pt-2 border-t"><span>Harga Jual</span> <span class="font-semibold">\${formatCurrency(item.hargaJual)}</span></div><div class="flex justify-between text-sm"><span>Harga Pokok (HPP)</span> <span class="hpp-text font-semibold">\${formatCurrency(hpp)}</span></div><div class="flex justify-between text-sm"><span>Margin / Porsi</span> <span class="margin-text font-semibold text-green-600">\${formatCurrency(margin)}</span></div><div class="flex justify-between text-sm"><span>BEP (Porsi / Bulan)</span> <span class="bep-text font-semibold text-blue-600">\${isFinite(bep) && bep > 0 ? Math.ceil(bep) : 'N/A'} Porsi</span></div>\`; DOMElements.menuAnalysisContainer.appendChild(card); }); }
-            function renderCapitalPlan() { const investmentContainer = document.getElementById('investment-cost-container'); const operationalContainer = document.getElementById('operational-cost-container'); investmentContainer.innerHTML = businessData.modal.investment.map((item, index) => \`<div class="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-2 capital-item-row" data-type="investment" data-index="\${index}"><input type="text" value="\${item.name}" placeholder="Nama Biaya" class="capital-item-name w-full bg-stone-50 p-2 rounded border"><input type="number" value="\${item.cost}" placeholder="0" class="capital-item-cost w-full md:w-32 bg-stone-50 p-2 rounded border"><button type="button" class="delete-capital-item-btn text-red-500 hover:text-red-700 font-bold p-1 self-end md:self-center">✕</button></div>\`).join(''); operationalContainer.innerHTML = businessData.modal.operational.map((item, index) => \`<div class="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-2 capital-item-row" data-type="operational" data-index="\${index}"><input type="text" value="\${item.name}" placeholder="Nama Biaya" class="capital-item-name w-full bg-stone-50 p-2 rounded border"><input type="number" value="\${item.cost}" placeholder="0" class="capital-item-cost w-full md:w-32 bg-stone-50 p-2 rounded border"><button type="button" class="delete-capital-item-btn text-red-500 hover:text-red-700 font-bold p-1 self-end md:self-center">✕</button></div>\`).join(''); updateCapitalTotals(); }
-            function updateCapitalTotals() { const totalInvestment = businessData.modal.investment.reduce((sum, item) => sum + (item.cost || 0), 0); const totalOperational = businessData.modal.operational.reduce((sum, item) => sum + (item.cost || 0), 0); document.getElementById('total-investment').textContent = formatCurrency(totalInvestment); document.getElementById('total-operational').textContent = formatCurrency(totalOperational); document.getElementById('total-modal-keseluruhan').textContent = formatCurrency(totalInvestment + totalOperational); }
-            function openKelolaMenuModal(menuId) { const menu = businessData.menu.find(m => m.id === menuId); DOMElements.kelolaMenuModal.innerHTML = \`<div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl m-4"><h3 class="text-2xl font-bold mb-4">Kelola Menu: \${menu.name}</h3><form id="kelola-menu-form" class="space-y-6 max-h-[80vh] overflow-y-auto pr-4"><input type="hidden" id="kelola-menu-id" value="\${menu.id}"><div><label for="kelola-harga-jual" class="block text-sm font-bold text-stone-700 mb-1">Harga Jual (Rp)</label><input type="number" id="kelola-harga-jual" value="\${menu.hargaJual}" class="bg-stone-50 w-full rounded p-2"></div><div class="border-t pt-4"><h4 class="text-lg font-bold mb-2">Rincian HPP (Harga Pokok Penjualan)</h4><div id="hpp-items-container" class="space-y-3">\${(menu.hppBreakdown || []).map(item => \`<div class="flex items-center space-x-2 hpp-item-row"><input type="text" value="\${item.name}" class="hpp-item-name w-full bg-stone-50 p-2 rounded border"><input type="number" value="\${item.cost}" class="hpp-item-cost w-32 bg-stone-50 p-2 rounded border"><button type="button" class="delete-hpp-item-btn text-red-500 hover:text-red-700 font-bold p-1">✕</button></div>\`).join('')}</div><button type="button" id="add-hpp-item-btn" class="mt-3 w-full text-sm bg-blue-100 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 transition">+ Tambah Item HPP</button></div><div class="border-t pt-4"><h4 class="text-lg font-bold mb-2">Kalkulator HPP per Porsi</h4><div class="p-4 bg-stone-50 rounded-lg space-y-2"><div class="grid grid-cols-2 gap-4"><div><label class="text-sm">Harga Beli Bahan</label><input type="number" id="calc-harga-bahan" class="w-full p-2 rounded border"></div><div><label class="text-sm">Jumlah Porsi</label><input type="number" id="calc-jumlah-porsi" class="w-full p-2 rounded border"></div></div><div class="flex justify-between items-center"><span class="font-semibold">Biaya per Porsi:</span><span id="calc-hasil-porsi" class="font-bold text-lg text-green-600">Rp 0</span></div><button type="button" id="add-calc-to-hpp-btn" class="w-full text-sm bg-green-100 text-green-800 font-semibold py-2 px-4 rounded-lg hover:bg-green-200 transition">↓ Tambahkan ke Rincian HPP</button></div></div><div class="flex justify-end space-x-3 pt-4"><button type="button" class="cancel-modal-btn bg-stone-200 text-stone-800 font-bold py-2 px-4 rounded-lg hover:bg-stone-300">Tutup</button><button type="submit" class="bg-amber-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-amber-600">Simpan Perubahan</button></div></form></div>\`; DOMElements.kelolaMenuModal.classList.remove('hidden'); DOMElements.kelolaMenuModal.classList.add('flex'); }
-            async function saveKelolaMenu(e) { e.preventDefault(); const menuId = e.target.querySelector('#kelola-menu-id').value; const menu = businessData.menu.find(m => m.id === menuId); menu.hargaJual = parseInt(e.target.querySelector('#kelola-harga-jual').value) || 0; const newBreakdown = []; e.target.querySelectorAll('.hpp-item-row').forEach(row => { const name = row.querySelector('.hpp-item-name').value.trim(); const cost = parseInt(row.querySelector('.hpp-item-cost').value) || 0; if (name) newBreakdown.push({ name, cost }); }); menu.hppBreakdown = newBreakdown; await saveData(); renderMenuAnalysis(); DOMElements.kelolaMenuModal.classList.add('hidden'); }
-            function renderPreOrders() { DOMElements.preOrderList.innerHTML = ''; const activeOrders = preOrders.filter(o => o.status === 'proses'); if (activeOrders.length === 0) { DOMElements.preOrderList.innerHTML = \`<p class="text-stone-500 italic md:col-span-3">Tidak ada pesanan aktif.</p>\`; } else { activeOrders.forEach(order => { const card = document.createElement('div'); card.className = 'bg-white p-4 rounded-lg shadow flex flex-col'; card.innerHTML = \`<h4 class="font-bold">\${order.customer}</h4><p class="text-sm text-stone-500 mb-2">Ambil: \${new Date(order.date).toLocaleDateString('id-ID')}</p><p class="text-sm text-stone-700 flex-grow whitespace-pre-wrap">\${order.details}</p><p class="font-bold text-amber-600 mt-2">\${formatCurrency(order.amount)}</p><button data-id="\${order.id}" class="complete-po-btn mt-4 w-full bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 transition">Selesaikan Pesanan</button>\`; DOMElements.preOrderList.appendChild(card); }); } DOMElements.poProses.textContent = preOrders.filter(o => o.status === 'proses').length; DOMElements.poSelesai.textContent = preOrders.filter(o => o.status === 'selesai').length; }
-            async function addPreOrder(e) { e.preventDefault(); const newOrder = { customer: DOMElements.preOrderForm.querySelector('#po-customer').value, date: DOMElements.preOrderForm.querySelector('#po-date').value, details: DOMElements.preOrderForm.querySelector('#po-details').value, amount: parseInt(DOMElements.preOrderForm.querySelector('#po-amount').value) || 0, status: 'proses' }; await addDoc(collection(db, "preOrders"), newOrder); DOMElements.preOrderForm.reset(); }
-            async function completePreOrder(id) { const orderRef = doc(db, "preOrders", id); await updateDoc(orderRef, { status: 'selesai' }); const order = preOrders.find(o => o.id === id); await addDoc(collection(db, "transactions"), { date: new Date().toISOString().split('T')[0], type: 'Pemasukan', category: 'Penjualan Pre-order', amount: order.amount }); }
-            function createSalesTrendChart() { const ctx = document.getElementById('sales-trend-chart').getContext('2d'); salesTrendChart = new Chart(ctx, { type: 'line', data: { labels: [], datasets: [{ label: 'Pemasukan Harian', data: [], backgroundColor: 'rgba(245, 158, 11, 0.2)', borderColor: 'rgba(245, 158, 11, 1)', borderWidth: 2, tension: 0.3, fill: true }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } } }); }
-            function updateSalesTrendChart() { const now = new Date(); const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate(); const labels = Array.from({ length: daysInMonth }, (_, i) => i + 1); const data = Array(daysInMonth).fill(0); transactions.forEach(tx => { const txDate = new Date(tx.date); if (tx.type === 'Pemasukan' && txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear()) { data[txDate.getDate() - 1] += tx.amount; } }); salesTrendChart.data.labels = labels; salesTrendChart.data.datasets[0].data = data; salesTrendChart.update(); }
-            document.addEventListener('input', e => { const target = e.target; if (target.matches('.capital-item-name, .capital-item-cost')) { const row = target.closest('.capital-item-row'); const type = row.dataset.type; const index = parseInt(row.dataset.index); const name = row.querySelector('.capital-item-name').value; const cost = parseInt(row.querySelector('.capital-item-cost').value) || 0; businessData.modal[type][index] = { name, cost }; updateCapitalTotals(); renderMenuAnalysis(); updateDashboard(); saveData(); } if (target.matches('#target-rupiah')) { target.value = formatNumber(parseInt(target.value.replace(/\\./g, '')) || 0); businessData.targetBulananRp = parseInt(target.value.replace(/\\./g, '')) || 0; updateTargetSlider(); updateDashboard(); saveData(); } if (target.matches('#target-harian')) { DOMElements.targetHarianValue.textContent = \`\${target.value} Porsi\`; } if (target.matches('#calc-harga-bahan, #calc-jumlah-porsi')) { const modal = target.closest('.modal'); const harga = parseInt(modal.querySelector('#calc-harga-bahan').value) || 0; const porsi = parseInt(modal.querySelector('#calc-jumlah-porsi').value) || 1; const hasil = harga / porsi; modal.querySelector('#calc-hasil-porsi').textContent = formatCurrency(hasil); } });
-            document.addEventListener('click', e => { const target = e.target; if(target.matches('.delete-btn')) deleteTransaction(target.dataset.id); if(target.matches('.edit-btn')) openEditModal(target.dataset.id); if(target.matches('.kelola-menu-btn')) openKelolaMenuModal(target.dataset.id); if(target.matches('.delete-capital-item-btn')) { const row = target.closest('.capital-item-row'); const type = row.dataset.type; const index = parseInt(row.dataset.index); businessData.modal[type].splice(index, 1); renderCapitalPlan(); renderMenuAnalysis(); updateDashboard(); saveData(); } if(target.matches('#add-investment-btn, #add-operational-btn')) { const type = target.id === 'add-investment-btn' ? 'investment' : 'operational'; businessData.modal[type].push({ name: '', cost: 0 }); renderCapitalPlan(); saveData(); } if(target.matches('#add-recipe-btn')) openRecipeModal(); if(target.matches('.kelola-resep-btn')) openRecipeModal(target.dataset.id); if(target.matches('.cancel-modal-btn')) target.closest('.modal').classList.add('hidden'); if(target.matches('#delete-recipe-btn')) deleteRecipe(DOMElements.recipeModal.querySelector('#recipe-id').value); if(target.matches('.complete-po-btn')) completePreOrder(target.dataset.id); if(target.matches('#add-hpp-item-btn')) { const container = target.closest('form').querySelector('#hpp-items-container'); const newItemRow = document.createElement('div'); newItemRow.className = 'flex items-center space-x-2 hpp-item-row'; newItemRow.innerHTML = \`<input type="text" placeholder="Nama Komponen Baru" class="hpp-item-name w-full bg-stone-50 p-2 rounded border"><input type="number" placeholder="0" class="hpp-item-cost w-32 bg-stone-50 p-2 rounded border"><button type="button" class="delete-hpp-item-btn text-red-500 hover:text-red-700 font-bold p-1">✕</button>\`; container.appendChild(newItemRow); } if(target.matches('.delete-hpp-item-btn')) target.closest('.hpp-item-row').remove(); if(target.matches('#add-calc-to-hpp-btn')) { const modal = target.closest('.modal'); const container = modal.querySelector('#hpp-items-container'); const harga = parseInt(modal.querySelector('#calc-harga-bahan').value) || 0; const porsi = parseInt(modal.querySelector('#calc-jumlah-porsi').value) || 1; const hasil = harga / porsi; const newItemRow = document.createElement('div'); newItemRow.className = 'flex items-center space-x-2 hpp-item-row'; newItemRow.innerHTML = \`<input type="text" value="Bahan Baku per Porsi" class="hpp-item-name w-full bg-stone-50 p-2 rounded border"><input type="number" value="\${Math.round(hasil)}" class="hpp-item-cost w-32 bg-stone-50 p-2 rounded border"><button type="button" class="delete-hpp-item-btn text-red-500 hover:text-red-700 font-bold p-1">✕</button>\`; container.appendChild(newItemRow); } });
-            document.addEventListener('submit', e => { e.preventDefault(); const target = e.target; if(target.matches('#transaction-form')) addTransaction(e); if(target.matches('#edit-tx-form')) saveEditTransaction(e); if(target.matches('#kelola-menu-form')) saveKelolaMenu(e); if(target.matches('#recipe-form')) saveRecipe(e); if(target.matches('#pre-order-form')) addPreOrder(e); });
+            
+            function renderAll() {
+                if (!businessData || Object.keys(businessData).length === 0) return;
+                renderTransactions();
+                renderRecipes();
+                renderMenuAnalysis();
+                renderCapitalPlan();
+                renderPreOrders();
+                updateDashboard();
+                if(document.querySelector('.content-section.active')?.id === 'laporan') {
+                    renderMonthlyReport(parseInt(DOMElements.reportMonth.value), parseInt(DOMElements.reportYear.value));
+                }
+            }
+
+            function setupNavigation() {
+                DOMElements.menuBtn.addEventListener('click', toggleSidebar);
+                DOMElements.sidebarOverlay.addEventListener('click', toggleSidebar);
+                DOMElements.sidebarLinks.forEach(link => {
+                    link.addEventListener('click', e => {
+                        e.preventDefault();
+                        const targetId = link.getAttribute('href').substring(1);
+                        DOMElements.contentSections.forEach(s => s.classList.remove('active'));
+                        document.getElementById(targetId).classList.add('active');
+                        DOMElements.sidebarLinks.forEach(l => l.classList.remove('active'));
+                        link.classList.add('active');
+                        DOMElements.headerTitle.textContent = link.textContent.trim();
+                        if (window.innerWidth < 768) toggleSidebar();
+                    });
+                });
+            }
+
+            function populateCategories(selectEl, type) {
+                selectEl.innerHTML = '';
+                businessData.categories[type].forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat; option.textContent = cat;
+                    selectEl.appendChild(option);
+                });
+            }
+
+            function renderTransactions() {
+                const container = DOMElements.transactionList;
+                container.innerHTML = '';
+                if (transactions.length === 0) {
+                    container.innerHTML = `<p class="text-stone-500 italic md:col-span-3">Belum ada transaksi.</p>`;
+                    return;
+                }
+                const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+                sorted.forEach(tx => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white p-4 rounded-lg shadow';
+                    const isPemasukan = tx.type === 'Pemasukan';
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-bold">${tx.category}</p>
+                                <p class="text-sm text-stone-500">${new Date(tx.date).toLocaleDateString('id-ID')}</p>
+                            </div>
+                            <p class="font-bold text-lg ${isPemasukan ? 'text-green-600' : 'text-red-600'}">${isPemasukan ? '+' : '-'} ${formatCurrency(tx.amount)}</p>
+                        </div>
+                        <div class="text-right mt-2">
+                            <button data-id="${tx.id}" class="edit-btn text-blue-500 hover:underline text-xs font-semibold">Edit</button>
+                            <button data-id="${tx.id}" class="delete-btn text-red-500 hover:underline text-xs font-semibold ml-2">Hapus</button>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+            
+            function updateDashboard() {
+                const targetBulananRp = businessData.targetBulananRp || 0;
+                DOMElements.targetBulananEl.textContent = formatCurrency(targetBulananRp);
+
+                const now = new Date();
+                const monthlyTx = transactions.filter(tx => new Date(tx.date).getMonth() === now.getMonth() && new Date(tx.date).getFullYear() === now.getFullYear());
+                const totalPemasukan = monthlyTx.filter(tx => tx.type === 'Pemasukan').reduce((s, tx) => s + tx.amount, 0);
+                const totalPengeluaran = monthlyTx.filter(tx => tx.type === 'Pengeluaran').reduce((s, tx) => s + tx.amount, 0);
+                const totalBiayaOperasional = businessData.modal.operational.reduce((sum, item) => sum + (item.cost || 0), 0);
+                const labaKotor = totalPemasukan - totalPengeluaran;
+                const labaBersih = labaKotor - totalBiayaOperasional;
+                const kekurangan = Math.max(0, targetBulananRp - totalPemasukan);
+                
+                DOMElements.labaKotorEl.textContent = formatCurrency(labaKotor);
+                DOMElements.labaBersihEl.textContent = formatCurrency(labaBersih);
+                DOMElements.kekuranganTargetEl.textContent = formatCurrency(kekurangan);
+                updateSalesTrendChart();
+            }
+
+            function updateTargetSlider() {
+                const targetBulananRp = businessData.targetBulananRp || 0;
+                let avgPrice = businessData.menu.reduce((a, i) => a + i.hargaJual, 0) / businessData.menu.length;
+                if (!isFinite(avgPrice) || avgPrice === 0) avgPrice = 30000;
+                
+                const requiredMonthlyPortions = targetBulananRp / avgPrice;
+                const requiredDailyPortions = Math.ceil(requiredMonthlyPortions / businessData.hariKerjaPerBulan);
+                
+                DOMElements.targetHarianSlider.value = requiredDailyPortions;
+                DOMElements.targetHarianValue.textContent = `${requiredDailyPortions} Porsi`;
+            }
+
+            async function addTransaction(e) {
+                e.preventDefault();
+                const newTx = { date: DOMElements.txDate.value, type: DOMElements.txType.value, category: DOMElements.txCategory.value, amount: parseInt(DOMElements.txAmount.value) || 0 };
+                await addDoc(collection(db, "transactions"), newTx);
+                DOMElements.txForm.reset(); DOMElements.txDate.valueAsDate = new Date();
+            }
+            
+            async function deleteTransaction(id) {
+                await deleteDoc(doc(db, "transactions", id));
+            }
+
+            function openEditModal(id) {
+                const tx = transactions.find(t => t.id === id);
+                DOMElements.editTxModal.innerHTML = `
+                <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md m-4">
+                    <h3 class="text-2xl font-bold mb-4">Edit Transaksi</h3>
+                    <form id="edit-tx-form">
+                        <input type="hidden" id="edit-tx-id" value="${tx.id}">
+                        <div class="space-y-4">
+                            <div><label for="edit-tx-date" class="block text-sm font-bold text-stone-700 mb-1">Tanggal</label><input type="date" id="edit-tx-date" value="${tx.date}" class="bg-stone-50 mt-1 block w-full rounded-md border-stone-300 shadow-sm" required></div>
+                            <div><label for="edit-tx-category" class="block text-sm font-bold text-stone-700 mb-1">Kategori</label><select id="edit-tx-category" class="bg-stone-50 mt-1 block w-full rounded-md border-stone-300 shadow-sm"></select></div>
+                            <div><label for="edit-tx-amount" class="block text-sm font-bold text-stone-700 mb-1">Jumlah (Rp)</label><input type="number" id="edit-tx-amount" value="${tx.amount}" class="bg-stone-50 mt-1 block w-full rounded-md border-stone-300 shadow-sm" required></div>
+                        </div>
+                        <div class="mt-6 flex justify-end space-x-3">
+                            <button type="button" class="cancel-modal-btn bg-stone-200 text-stone-800 font-bold py-2 px-4 rounded-lg hover:bg-stone-300">Batal</button>
+                            <button type="submit" class="bg-amber-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-amber-600">Simpan</button>
+                        </div>
+                    </form>
+                </div>`;
+                const catSelect = DOMElements.editTxModal.querySelector('#edit-tx-category');
+                populateCategories(catSelect, tx.type);
+                catSelect.value = tx.category;
+                DOMElements.editTxModal.classList.remove('hidden');
+                DOMElements.editTxModal.classList.add('flex');
+            }
+
+            async function saveEditTransaction(e) {
+                e.preventDefault();
+                const id = e.target.querySelector('#edit-tx-id').value;
+                const updatedTxData = {
+                    date: e.target.querySelector('#edit-tx-date').value,
+                    category: e.target.querySelector('#edit-tx-category').value,
+                    amount: parseInt(e.target.querySelector('#edit-tx-amount').value) || 0
+                };
+                const txRef = doc(db, "transactions", id);
+                await updateDoc(txRef, updatedTxData);
+                DOMElements.editTxModal.classList.add('hidden');
+            }
+            
+            function renderRecipes() {
+                DOMElements.recipeContainer.innerHTML = businessData.menu.map(item => {
+                    const c1 = item.resep.C1_content ? `<div><h4 class="text-xl font-semibold mb-3">${item.resep.C1_label || 'Komponen 1'}:</h4><ul class="list-disc list-inside text-stone-600 space-y-2">${item.resep.C1_content.split('\n').map(b => `<li>${b}</li>`).join('')}</ul></div>` : '';
+                    const c2 = item.resep.C2_content ? `<div><h4 class="text-xl font-semibold mb-3">${item.resep.C2_label || 'Komponen 2'}:</h4><ul class="list-disc list-inside text-stone-600 space-y-2">${item.resep.C2_content.split('\n').map(s => `<li>${s}</li>`).join('')}</ul></div>` : '';
+                    const c3 = item.resep.C3_content ? `<div class="mt-6 pt-4 border-t md:col-span-2"><h4 class="text-xl font-semibold mb-3">${item.resep.C3_label || 'Langkah Pembuatan'}:</h4><ol class="list-decimal list-inside text-stone-600 space-y-2">${item.resep.C3_content.split('\n').map(l => `<li>${l}</li>`).join('')}</ol></div>` : '';
+
+                    return `
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-xl md:text-2xl font-bold mb-4 border-b pb-2 flex-1">${item.name}</h3>
+                            <button data-id="${item.id}" class="kelola-resep-btn text-xs bg-stone-100 text-stone-800 font-semibold px-2 py-1 rounded hover:bg-stone-200 ml-4">Kelola</button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                           ${c1}
+                           ${c2}
+                           ${c3}
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            function openRecipeModal(menuId = null) {
+                const isNew = menuId === null;
+                const menu = isNew ? { id: `menu-${Date.now()}`, name: '', resep: { C1_label: 'Bahan Utama', C1_content: '', C2_label: 'Pelengkap', C2_content: '', C3_label: 'Langkah Pembuatan', C3_content: '' } } : businessData.menu.find(m => m.id === menuId);
+                DOMElements.recipeModal.innerHTML = `
+                <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl m-4">
+                    <h3 class="text-xl md:text-2xl font-bold mb-4">${isNew ? 'Tambah Resep Baru' : 'Edit Resep'}</h3>
+                    <form id="recipe-form" class="space-y-4 max-h-[80vh] overflow-y-auto pr-4">
+                        <input type="hidden" id="recipe-id" value="${menu.id}">
+                        <div><label for="recipe-name" class="block text-sm font-bold text-stone-700 mb-1">Nama Menu</label><input type="text" id="recipe-name" value="${menu.name}" class="bg-stone-50 w-full rounded" required></div>
+                        
+                        <div><label class="block text-sm font-bold text-stone-700 mb-1">Judul Komponen 1</label><input type="text" id="recipe-c1-label" value="${menu.resep.C1_label || ''}" class="bg-stone-50 w-full rounded"></div>
+                        <div><label for="recipe-c1-content" class="block text-sm font-bold text-stone-700 mb-1">Isi Komponen 1 (satu baris per item)</label><textarea id="recipe-c1-content" rows="5" class="bg-stone-50 w-full rounded">${menu.resep.C1_content || ''}</textarea></div>
+                        
+                        <div><label class="block text-sm font-bold text-stone-700 mb-1">Judul Komponen 2</label><input type="text" id="recipe-c2-label" value="${menu.resep.C2_label || ''}" class="bg-stone-50 w-full rounded"></div>
+                        <div><label for="recipe-c2-content" class="block text-sm font-bold text-stone-700 mb-1">Isi Komponen 2 (satu baris per item)</label><textarea id="recipe-c2-content" rows="3" class="bg-stone-50 w-full rounded">${menu.resep.C2_content || ''}</textarea></div>
+                        
+                        <div><label class="block text-sm font-bold text-stone-700 mb-1">Judul Langkah</label><input type="text" id="recipe-c3-label" value="${menu.resep.C3_label || ''}" class="bg-stone-50 w-full rounded"></div>
+                        <div><label for="recipe-c3-content" class="block text-sm font-bold text-stone-700 mb-1">Isi Langkah (satu baris per item)</label><textarea id="recipe-c3-content" rows="5" class="bg-stone-50 w-full rounded">${menu.resep.C3_content || ''}</textarea></div>
+                        
+                        <div class="flex justify-between items-center pt-4">
+                            <div>${!isNew ? '<button type="button" id="delete-recipe-btn" class="bg-red-100 text-red-700 font-bold py-2 px-4 rounded-lg hover:bg-red-200">Hapus Resep Ini</button>' : '<div></div>'}</div>
+                            <div class="flex space-x-3">
+                                <button type="button" class="cancel-modal-btn bg-stone-200 text-stone-800 font-bold py-2 px-4 rounded-lg hover:bg-stone-300">Batal</button>
+                                <button type="submit" class="bg-amber-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-amber-600">Simpan Resep</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>`;
+                DOMElements.recipeModal.classList.remove('hidden');
+                DOMElements.recipeModal.classList.add('flex');
+            }
+
+            async function saveRecipe(e) {
+                e.preventDefault();
+                const id = e.target.querySelector('#recipe-id').value;
+                const name = e.target.querySelector('#recipe-name').value;
+                const C1_label = e.target.querySelector('#recipe-c1-label').value;
+                const C1_content = e.target.querySelector('#recipe-c1-content').value;
+                const C2_label = e.target.querySelector('#recipe-c2-label').value;
+                const C2_content = e.target.querySelector('#recipe-c2-content').value;
+                const C3_label = e.target.querySelector('#recipe-c3-label').value;
+                const C3_content = e.target.querySelector('#recipe-c3-content').value;
+                
+                const menuIndex = businessData.menu.findIndex(m => m.id === id);
+                if (menuIndex > -1) {
+                    businessData.menu[menuIndex].name = name;
+                    businessData.menu[menuIndex].resep = { C1_label, C1_content, C2_label, C2_content, C3_label, C3_content };
+                } else {
+                    businessData.menu.push({ id, name, hargaJual: 30000, hppBreakdown: [], resep: { C1_label, C1_content, C2_label, C2_content, C3_label, C3_content } });
+                }
+                await saveData(); 
+                renderAll();
+                DOMElements.recipeModal.classList.add('hidden');
+            }
+
+            async function deleteRecipe(id) {
+                if (confirm('Apakah Anda yakin ingin menghapus resep ini? Menu yang terhapus juga akan hilang dari Analisis Bisnis Plan.')) {
+                    businessData.menu = businessData.menu.filter(m => m.id !== id);
+                    await saveData();
+                    renderAll();
+                    DOMElements.recipeModal.classList.add('hidden');
+                }
+            }
+
+            function renderMenuAnalysis() {
+                DOMElements.menuAnalysisContainer.innerHTML = '';
+                const totalBiayaOperasional = businessData.modal.operational.reduce((sum, item) => sum + (item.cost || 0), 0);
+                businessData.menu.forEach(item => {
+                    const hpp = (item.hppBreakdown || []).reduce((sum, i) => sum + (i.cost || 0), 0);
+                    const margin = item.hargaJual - hpp;
+                    const bep = totalBiayaOperasional / margin;
+                    const card = document.createElement('div');
+                    card.className = 'bg-stone-50 p-4 rounded-lg border space-y-3';
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <h4 class="text-xl font-bold text-amber-700">${item.name}</h4>
+                            <button data-id="${item.id}" class="kelola-menu-btn text-xs bg-amber-100 text-amber-800 font-semibold px-2 py-1 rounded hover:bg-amber-200">Kelola</button>
+                        </div>
+                        <div class="flex justify-between text-sm pt-2 border-t"><span>Harga Jual</span> <span class="font-semibold">${formatCurrency(item.hargaJual)}</span></div>
+                        <div class="flex justify-between text-sm"><span>Harga Pokok (HPP)</span> <span class="hpp-text font-semibold">${formatCurrency(hpp)}</span></div>
+                        <div class="flex justify-between text-sm"><span>Margin / Porsi</span> <span class="margin-text font-semibold text-green-600">${formatCurrency(margin)}</span></div>
+                        <div class="flex justify-between text-sm"><span>BEP (Porsi / Bulan)</span> <span class="bep-text font-semibold text-blue-600">${isFinite(bep) && bep > 0 ? Math.ceil(bep) : 'N/A'} Porsi</span></div>
+                    `;
+                    DOMElements.menuAnalysisContainer.appendChild(card);
+                });
+            }
+            
+            function renderCapitalPlan() {
+                const investmentContainer = document.getElementById('investment-cost-container');
+                const operationalContainer = document.getElementById('operational-cost-container');
+                
+                investmentContainer.innerHTML = businessData.modal.investment.map((item, index) => `
+                    <div class="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-2 capital-item-row" data-type="investment" data-index="${index}">
+                        <input type="text" value="${item.name}" placeholder="Nama Biaya" class="capital-item-name w-full bg-stone-50 p-2 rounded border">
+                        <input type="number" value="${item.cost}" placeholder="0" class="capital-item-cost w-full md:w-32 bg-stone-50 p-2 rounded border">
+                        <button type="button" class="delete-capital-item-btn text-red-500 hover:text-red-700 font-bold p-1 self-end md:self-center">✕</button>
+                    </div>
+                `).join('');
+
+                operationalContainer.innerHTML = businessData.modal.operational.map((item, index) => `
+                    <div class="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-2 capital-item-row" data-type="operational" data-index="${index}">
+                        <input type="text" value="${item.name}" placeholder="Nama Biaya" class="capital-item-name w-full bg-stone-50 p-2 rounded border">
+                        <input type="number" value="${item.cost}" placeholder="0" class="capital-item-cost w-full md:w-32 bg-stone-50 p-2 rounded border">
+                        <button type="button" class="delete-capital-item-btn text-red-500 hover:text-red-700 font-bold p-1 self-end md:self-center">✕</button>
+                    </div>
+                `).join('');
+
+                updateCapitalTotals();
+            }
+
+            function updateCapitalTotals() {
+                const totalInvestment = businessData.modal.investment.reduce((sum, item) => sum + (item.cost || 0), 0);
+                const totalOperational = businessData.modal.operational.reduce((sum, item) => sum + (item.cost || 0), 0);
+                document.getElementById('total-investment').textContent = formatCurrency(totalInvestment);
+                document.getElementById('total-operational').textContent = formatCurrency(totalOperational);
+                document.getElementById('total-modal-keseluruhan').textContent = formatCurrency(totalInvestment + totalOperational);
+            }
+            
+            function openKelolaMenuModal(menuId) {
+                const menu = businessData.menu.find(m => m.id === menuId);
+                DOMElements.kelolaMenuModal.innerHTML = `
+                <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl m-4">
+                    <h3 class="text-2xl font-bold mb-4">Kelola Menu: ${menu.name}</h3>
+                    <form id="kelola-menu-form" class="space-y-6 max-h-[80vh] overflow-y-auto pr-4">
+                        <input type="hidden" id="kelola-menu-id" value="${menu.id}">
+                        <div>
+                            <label for="kelola-harga-jual" class="block text-sm font-bold text-stone-700 mb-1">Harga Jual (Rp)</label>
+                            <input type="number" id="kelola-harga-jual" value="${menu.hargaJual}" class="bg-stone-50 w-full rounded p-2">
+                        </div>
+                        <div class="border-t pt-4">
+                            <h4 class="text-lg font-bold mb-2">Rincian HPP (Harga Pokok Penjualan)</h4>
+                            <div id="hpp-items-container" class="space-y-3">${(menu.hppBreakdown || []).map(item => `<div class="flex items-center space-x-2 hpp-item-row"><input type="text" value="${item.name}" class="hpp-item-name w-full bg-stone-50 p-2 rounded border"><input type="number" value="${item.cost}" class="hpp-item-cost w-32 bg-stone-50 p-2 rounded border"><button type="button" class="delete-hpp-item-btn text-red-500 hover:text-red-700 font-bold p-1">✕</button></div>`).join('')}</div>
+                            <button type="button" id="add-hpp-item-btn" class="mt-3 w-full text-sm bg-blue-100 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 transition">+ Tambah Item HPP</button>
+                        </div>
+                        <div class="border-t pt-4">
+                            <h4 class="text-lg font-bold mb-2">Kalkulator HPP per Porsi</h4>
+                            <div class="p-4 bg-stone-50 rounded-lg space-y-2">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div><label class="text-sm">Harga Beli Bahan</label><input type="number" id="calc-harga-bahan" class="w-full p-2 rounded border"></div>
+                                    <div><label class="text-sm">Jumlah Porsi</label><input type="number" id="calc-jumlah-porsi" class="w-full p-2 rounded border"></div>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="font-semibold">Biaya per Porsi:</span>
+                                    <span id="calc-hasil-porsi" class="font-bold text-lg text-green-600">Rp 0</span>
+                                </div>
+                                <button type="button" id="add-calc-to-hpp-btn" class="w-full text-sm bg-green-100 text-green-800 font-semibold py-2 px-4 rounded-lg hover:bg-green-200 transition">↓ Tambahkan ke Rincian HPP</button>
+                            </div>
+                        </div>
+                        <div class="flex justify-end space-x-3 pt-4">
+                            <button type="button" class="cancel-modal-btn bg-stone-200 text-stone-800 font-bold py-2 px-4 rounded-lg hover:bg-stone-300">Tutup</button>
+                            <button type="submit" class="bg-amber-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-amber-600">Simpan Perubahan</button>
+                        </div>
+                    </form>
+                </div>`;
+                DOMElements.kelolaMenuModal.classList.remove('hidden');
+                DOMElements.kelolaMenuModal.classList.add('flex');
+            }
+            
+            async function saveKelolaMenu(e) {
+                e.preventDefault();
+                const menuId = e.target.querySelector('#kelola-menu-id').value;
+                const menu = businessData.menu.find(m => m.id === menuId);
+                
+                menu.hargaJual = parseInt(e.target.querySelector('#kelola-harga-jual').value) || 0;
+
+                const newBreakdown = [];
+                e.target.querySelectorAll('.hpp-item-row').forEach(row => {
+                    const name = row.querySelector('.hpp-item-name').value.trim();
+                    const cost = parseInt(row.querySelector('.hpp-item-cost').value) || 0;
+                    if (name) newBreakdown.push({ name, cost });
+                });
+                menu.hppBreakdown = newBreakdown;
+
+                await saveData(); 
+                renderMenuAnalysis();
+                DOMElements.kelolaMenuModal.classList.add('hidden');
+            }
+            
+            function renderPreOrders() {
+                DOMElements.preOrderList.innerHTML = '';
+                const activeOrders = preOrders.filter(o => o.status === 'proses');
+                if (activeOrders.length === 0) {
+                    DOMElements.preOrderList.innerHTML = `<p class="text-stone-500 italic md:col-span-3">Tidak ada pesanan aktif.</p>`;
+                } else {
+                    activeOrders.forEach(order => {
+                        const card = document.createElement('div');
+                        card.className = 'bg-white p-4 rounded-lg shadow flex flex-col';
+                        card.innerHTML = `
+                            <h4 class="font-bold">${order.customer}</h4>
+                            <p class="text-sm text-stone-500 mb-2">Ambil: ${new Date(order.date).toLocaleDateString('id-ID')}</p>
+                            <p class="text-sm text-stone-700 flex-grow whitespace-pre-wrap">${order.details}</p>
+                            <p class="font-bold text-amber-600 mt-2">${formatCurrency(order.amount)}</p>
+                            <button data-id="${order.id}" class="complete-po-btn mt-4 w-full bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 transition">Selesaikan Pesanan</button>
+                        `;
+                        DOMElements.preOrderList.appendChild(card);
+                    });
+                }
+                DOMElements.poProses.textContent = preOrders.filter(o => o.status === 'proses').length;
+                DOMElements.poSelesai.textContent = preOrders.filter(o => o.status === 'selesai').length;
+            }
+
+            async function addPreOrder(e) {
+                e.preventDefault();
+                const newOrder = {
+                    customer: DOMElements.preOrderForm.querySelector('#po-customer').value,
+                    date: DOMElements.preOrderForm.querySelector('#po-date').value,
+                    details: DOMElements.preOrderForm.querySelector('#po-details').value,
+                    amount: parseInt(DOMElements.preOrderForm.querySelector('#po-amount').value) || 0,
+                    status: 'proses'
+                };
+                await addDoc(collection(db, "preOrders"), newOrder);
+                DOMElements.preOrderForm.reset();
+            }
+
+            async function completePreOrder(id) {
+                const orderRef = doc(db, "preOrders", id);
+                await updateDoc(orderRef, { status: 'selesai' });
+
+                const order = preOrders.find(o => o.id === id);
+                await addDoc(collection(db, "transactions"), { date: new Date().toISOString().split('T')[0], type: 'Pemasukan', category: 'Penjualan Pre-order', amount: order.amount });
+            }
+            
+            function createSalesTrendChart() {
+                const ctx = document.getElementById('sales-trend-chart').getContext('2d');
+                salesTrendChart = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: [], datasets: [{ label: 'Pemasukan Harian', data: [], backgroundColor: 'rgba(245, 158, 11, 0.2)', borderColor: 'rgba(245, 158, 11, 1)', borderWidth: 2, tension: 0.3, fill: true }] },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+                });
+            }
+
+            function updateSalesTrendChart() {
+                const now = new Date();
+                const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+                const labels = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+                const data = Array(daysInMonth).fill(0);
+
+                transactions.forEach(tx => {
+                    const txDate = new Date(tx.date);
+                    if (tx.type === 'Pemasukan' && txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear()) {
+                        data[txDate.getDate() - 1] += tx.amount;
+                    }
+                });
+                
+                salesTrendChart.data.labels = labels;
+                salesTrendChart.data.datasets[0].data = data;
+                salesTrendChart.update();
+            }
+
+            function renderMonthlyReport(month, year) {
+                const reportTitle = document.getElementById('report-title');
+                const reportPemasukan = document.getElementById('report-pemasukan');
+                const reportPengeluaran = document.getElementById('report-pengeluaran');
+                const reportLabaBersih = document.getElementById('report-laba-bersih');
+                const reportPengeluaranDetail = document.getElementById('report-pengeluaran-detail');
+
+                const monthName = DOMElements.reportMonth.options[DOMElements.reportMonth.selectedIndex].text;
+                reportTitle.textContent = `Laporan Keuangan Bulan ${monthName} ${year}`;
+
+                const reportTx = transactions.filter(tx => {
+                    const txDate = new Date(tx.date);
+                    return txDate.getMonth() === month && txDate.getFullYear() === year;
+                });
+
+                const totalPemasukan = reportTx.filter(tx => tx.type === 'Pemasukan').reduce((s, tx) => s + tx.amount, 0);
+                const totalPengeluaran = reportTx.filter(tx => tx.type === 'Pengeluaran').reduce((s, tx) => s + tx.amount, 0);
+                const totalBiayaOperasional = businessData.modal.operational.reduce((sum, item) => sum + (item.cost || 0), 0);
+                const labaBersih = totalPemasukan - totalPengeluaran - totalBiayaOperasional;
+
+                reportPemasukan.textContent = formatCurrency(totalPemasukan);
+                reportPengeluaran.textContent = formatCurrency(totalPengeluaran);
+                reportLabaBersih.textContent = formatCurrency(labaBersih);
+
+                const pengeluaranByCategory = reportTx
+                    .filter(tx => tx.type === 'Pengeluaran')
+                    .reduce((acc, tx) => {
+                        acc[tx.category] = (acc[tx.category] || 0) + tx.amount;
+                        return acc;
+                    }, {});
+                
+                reportPengeluaranDetail.innerHTML = Object.keys(pengeluaranByCategory).length > 0 
+                    ? Object.entries(pengeluaranByCategory).map(([category, amount]) => `
+                        <div class="flex justify-between text-sm py-1 border-b">
+                            <span>${category}</span>
+                            <span class="font-semibold">${formatCurrency(amount)}</span>
+                        </div>
+                    `).join('')
+                    : '<p class="text-stone-500 italic">Tidak ada data pengeluaran untuk periode ini.</p>';
+            }
+
+            function setupReportFilters() {
+                const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+                const currentYear = new Date().getFullYear();
+                const currentMonth = new Date().getMonth();
+
+                months.forEach((month, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = month;
+                    if (index === currentMonth) option.selected = true;
+                    DOMElements.reportMonth.appendChild(option);
+                });
+
+                for (let i = currentYear; i >= 2020; i--) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = i;
+                    if (i === currentYear) option.selected = true;
+                    DOMElements.reportYear.appendChild(option);
+                }
+
+                const updateReportView = () => {
+                    const selectedMonth = parseInt(DOMElements.reportMonth.value);
+                    const selectedYear = parseInt(DOMElements.reportYear.value);
+                    renderMonthlyReport(selectedMonth, selectedYear);
+                };
+
+                DOMElements.reportMonth.addEventListener('change', updateReportView);
+                DOMElements.reportYear.addEventListener('change', updateReportView);
+            }
+
+            document.addEventListener('input', e => {
+                const target = e.target;
+                if (target.matches('.capital-item-name, .capital-item-cost')) {
+                    const row = target.closest('.capital-item-row');
+                    const type = row.dataset.type;
+                    const index = parseInt(row.dataset.index);
+                    const name = row.querySelector('.capital-item-name').value;
+                    const cost = parseInt(row.querySelector('.capital-item-cost').value) || 0;
+                    businessData.modal[type][index] = { name, cost };
+                    updateCapitalTotals(); renderMenuAnalysis(); updateDashboard(); saveData();
+                }
+                if (target.matches('#target-rupiah')) {
+                    target.value = formatNumber(parseInt(target.value.replace(/\./g, '')) || 0);
+                    businessData.targetBulananRp = parseInt(target.value.replace(/\./g, '')) || 0;
+                    updateTargetSlider();
+                    updateDashboard();
+                    saveData();
+                }
+                if (target.matches('#target-harian')) {
+                    DOMElements.targetHarianValue.textContent = `${target.value} Porsi`;
+                }
+                if (target.matches('#calc-harga-bahan, #calc-jumlah-porsi')) {
+                    const modal = target.closest('.modal');
+                    const harga = parseInt(modal.querySelector('#calc-harga-bahan').value) || 0;
+                    const porsi = parseInt(modal.querySelector('#calc-jumlah-porsi').value) || 1;
+                    const hasil = harga / porsi;
+                    modal.querySelector('#calc-hasil-porsi').textContent = formatCurrency(hasil);
+                }
+            });
+            
+            document.addEventListener('click', e => {
+                const target = e.target;
+                if(target.matches('.delete-btn')) deleteTransaction(target.dataset.id);
+                if(target.matches('.edit-btn')) openEditModal(target.dataset.id);
+                if(target.matches('.kelola-menu-btn')) openKelolaMenuModal(target.dataset.id);
+                if(target.matches('.delete-capital-item-btn')) {
+                    const row = target.closest('.capital-item-row');
+                    const type = row.dataset.type;
+                    const index = parseInt(row.dataset.index);
+                    businessData.modal[type].splice(index, 1);
+                    renderCapitalPlan(); renderMenuAnalysis(); updateDashboard(); saveData();
+                }
+                if(target.matches('#add-investment-btn, #add-operational-btn')) {
+                    const type = target.id === 'add-investment-btn' ? 'investment' : 'operational';
+                    businessData.modal[type].push({ name: '', cost: 0 });
+                    renderCapitalPlan(); saveData();
+                }
+                if(target.matches('#add-recipe-btn')) openRecipeModal();
+                if(target.matches('.kelola-resep-btn')) openRecipeModal(target.dataset.id);
+                if(target.matches('.cancel-modal-btn')) target.closest('.modal').classList.add('hidden');
+                if(target.matches('#delete-recipe-btn')) deleteRecipe(DOMElements.recipeModal.querySelector('#recipe-id').value);
+                if(target.matches('.complete-po-btn')) completePreOrder(target.dataset.id);
+                if(target.matches('#add-hpp-item-btn')) {
+                    const container = target.closest('form').querySelector('#hpp-items-container');
+                    const newItemRow = document.createElement('div');
+                    newItemRow.className = 'flex items-center space-x-2 hpp-item-row';
+                    newItemRow.innerHTML = `<input type="text" placeholder="Nama Komponen Baru" class="hpp-item-name w-full bg-stone-50 p-2 rounded border"><input type="number" placeholder="0" class="hpp-item-cost w-32 bg-stone-50 p-2 rounded border"><button type="button" class="delete-hpp-item-btn text-red-500 hover:text-red-700 font-bold p-1">✕</button>`;
+                    container.appendChild(newItemRow);
+                }
+                if(target.matches('.delete-hpp-item-btn')) target.closest('.hpp-item-row').remove();
+                if(target.matches('#add-calc-to-hpp-btn')) {
+                    const modal = target.closest('.modal');
+                    const container = modal.querySelector('#hpp-items-container');
+                    const harga = parseInt(modal.querySelector('#calc-harga-bahan').value) || 0;
+                    const porsi = parseInt(modal.querySelector('#calc-jumlah-porsi').value) || 1;
+                    const hasil = harga / porsi;
+                    const newItemRow = document.createElement('div');
+                    newItemRow.className = 'flex items-center space-x-2 hpp-item-row';
+                    newItemRow.innerHTML = `<input type="text" value="Bahan Baku per Porsi" class="hpp-item-name w-full bg-stone-50 p-2 rounded border"><input type="number" value="${Math.round(hasil)}" class="hpp-item-cost w-32 bg-stone-50 p-2 rounded border"><button type="button" class="delete-hpp-item-btn text-red-500 hover:text-red-700 font-bold p-1">✕</button>`;
+                    container.appendChild(newItemRow);
+                }
+            });
+
+            document.addEventListener('submit', e => {
+                e.preventDefault();
+                const target = e.target;
+                if(target.matches('#transaction-form')) addTransaction(e);
+                if(target.matches('#edit-tx-form')) saveEditTransaction(e);
+                if(target.matches('#kelola-menu-form')) saveKelolaMenu(e);
+                if(target.matches('#recipe-form')) saveRecipe(e);
+                if(target.matches('#pre-order-form')) addPreOrder(e);
+            });
+
             DOMElements.txType.addEventListener('change', () => populateCategories(DOMElements.txCategory, DOMElements.txType.value));
-            DOMElements.targetHarianSlider.addEventListener('change', async () => { const dailyPortions = parseInt(DOMElements.targetHarianSlider.value); let avgPrice = businessData.menu.reduce((a, i) => a + i.hargaJual, 0) / businessData.menu.length; if (!isFinite(avgPrice) || avgPrice === 0) avgPrice = 30000; businessData.targetBulananRp = Math.round(dailyPortions * avgPrice * businessData.hariKerjaPerBulan); DOMElements.targetRupiahInput.value = formatNumber(businessData.targetBulananRp); updateDashboard(); await saveData(); });
-            async function initialize() { setupNavigation(); DOMElements.txDate.valueAsDate = new Date(); DOMElements.preOrderForm.querySelector('#po-date').valueAsDate = new Date(); populateCategories(DOMElements.txCategory, 'Pemasukan'); createSalesTrendChart(); setupReportFilters(); await loadData(); }
+            DOMElements.targetHarianSlider.addEventListener('change', async () => {
+                const dailyPortions = parseInt(DOMElements.targetHarianSlider.value);
+                let avgPrice = businessData.menu.reduce((a, i) => a + i.hargaJual, 0) / businessData.menu.length;
+                if (!isFinite(avgPrice) || avgPrice === 0) avgPrice = 30000;
+                businessData.targetBulananRp = Math.round(dailyPortions * avgPrice * businessData.hariKerjaPerBulan);
+                DOMElements.targetRupiahInput.value = formatNumber(businessData.targetBulananRp);
+                updateDashboard();
+                await saveData();
+            });
+            DOMElements.printReportBtn.addEventListener('click', () => window.print());
+
+            async function initialize() {
+                setupNavigation();
+                DOMElements.txDate.valueAsDate = new Date();
+                DOMElements.preOrderForm.querySelector('#po-date').valueAsDate = new Date();
+                populateCategories(DOMElements.txCategory, 'Pemasukan');
+                createSalesTrendChart();
+                setupReportFilters();
+                await loadData();
+            }
+
             initialize();
-            `;
-            eval(allFunctionsAndListeners); // Evaluate the string to attach listeners and run functions
         });
     </script>
 </body>
