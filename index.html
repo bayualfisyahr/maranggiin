@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maranggiin</title>
+    <title>Maranggi.in</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,14 +13,15 @@
         body { font-family: 'Inter', sans-serif; }
         .content-section { display: none; }
         .content-section.active { display: block; }
+        
+        /* Gaya untuk link aktif di Sidebar dan Bottom Bar */
         .sidebar-link.active { background-color: #f59e0b; color: white; }
-        #sidebar-overlay { transition: opacity 0.3s ease-in-out; }
+        .bottom-bar-link.active { color: #f59e0b; } /* [PERUBAHAN] Style untuk bottom bar active */
+
         .modal { transition: opacity 0.3s ease-in-out; }
         .chart-container { position: relative; width: 100%; height: 300px; max-height: 40vh; margin-top: 2rem; }
         
-        /* [PERUBAHAN] Menambahkan umpan balik visual saat disentuh */
-        .sidebar-link:active, 
-        button:active {
+        button:active, a:active {
             transform: scale(0.95);
             transition: transform 0.1s ease-in-out;
         }
@@ -28,9 +29,8 @@
 </head>
 <body class="bg-stone-100 text-stone-800">
 
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden"></div>
     <div class="flex">
-        <aside id="sidebar" class="bg-stone-800 text-white w-64 min-h-screen p-4 fixed md:relative transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-30">
+        <aside id="sidebar" class="bg-stone-800 text-white w-64 min-h-screen p-4 hidden md:flex flex-col">
             <h1 class="text-2xl font-bold text-amber-400 mb-8 text-center">Maranggi.in</h1>
             <nav class="flex flex-col space-y-2">
                 <a href="#bisnis-plan" class="sidebar-link active flex items-center py-2 px-4 rounded-lg hover:bg-amber-500 transition">
@@ -40,10 +40,10 @@
                     <span class="mr-3">🍲</span> Panduan Resep
                 </a>
                 <a href="#dashboard" class="sidebar-link flex items-center py-2 px-4 rounded-lg hover:bg-amber-500 transition">
-                    <span class="mr-3">📊</span> Dashboard Penjualan
+                    <span class="mr-3">📊</span> Dashboard
                 </a>
                  <a href="#pre-order" class="sidebar-link flex items-center py-2 px-4 rounded-lg hover:bg-amber-500 transition">
-                    <span class="mr-3">📦</span> Data Pesanan
+                    <span class="mr-3">📦</span> Pesanan
                 </a>
                 <a href="#data-kas" class="sidebar-link flex items-center py-2 px-4 rounded-lg hover:bg-amber-500 transition">
                     <span class="mr-3">💰</span> Data Kas
@@ -53,17 +53,15 @@
 
         <div class="flex-1">
             <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-10 shadow-sm flex items-center p-4 md:hidden">
-                <button id="menu-btn" class="text-stone-800 mr-4">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                </button>
                 <h2 id="header-title" class="text-xl font-bold text-amber-600">Bisnis Plan</h2>
             </header>
 
-            <main class="p-6 md:p-8 pb-24"> <section id="bisnis-plan" class="content-section active">
-                    <h2 class="text-3xl md:text-4xl font-bold mb-6">Rencana Bisnis</h2>
+            <main class="p-6 md:p-8 pb-24">
+                <section id="bisnis-plan" class="content-section active">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-6">Rencana Bisnis Strategis</h2>
                     <div class="space-y-8">
                         <div class="bg-white p-6 rounded-lg shadow">
-                            <h3 class="text-2xl font-bold mb-4">Analisis Menu & Break Event Point (BEP)</h3>
+                            <h3 class="text-2xl font-bold mb-4">Analisis Menu & Titik Impas (BEP)</h3>
                             <div id="menu-analysis-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 </div>
                         </div>
@@ -237,14 +235,36 @@
     <div id="edit-tx-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-40 hidden items-center justify-center"> </div>
     <div id="kelola-menu-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-40 hidden items-center justify-center"> </div>
     <div id="recipe-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-40 hidden items-center justify-center"> </div>
-    
     <div id="add-tx-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-40 hidden items-center justify-center p-4"></div>
 
-    <button id="fab-add-tx" class="fixed bottom-6 right-6 bg-amber-500 text-white rounded-full p-4 shadow-lg hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-400 z-20 transition transform hover:scale-110 active:scale-95">
+    <button id="fab-add-tx" class="fixed bottom-20 right-6 bg-amber-500 text-white rounded-full p-4 shadow-lg hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-400 z-20 transition transform hover:scale-110 active:scale-95">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
         </svg>
     </button>
+    
+    <nav id="bottom-bar" class="md:hidden fixed bottom-0 left-0 right-0 bg-stone-800 text-white flex justify-around p-2 shadow-t-lg z-30">
+        <a href="#bisnis-plan" class="bottom-bar-link active flex flex-col items-center justify-center text-xs w-full p-1">
+            <span class="text-xl mb-1">📄</span>
+            <span>Plan</span>
+        </a>
+        <a href="#resep" class="bottom-bar-link flex flex-col items-center justify-center text-xs w-full p-1">
+            <span class="text-xl mb-1">🍲</span>
+            <span>Resep</span>
+        </a>
+        <a href="#dashboard" class="bottom-bar-link flex flex-col items-center justify-center text-xs w-full p-1">
+            <span class="text-xl mb-1">📊</span>
+            <span>Dashboard</span>
+        </a>
+        <a href="#pre-order" class="bottom-bar-link flex flex-col items-center justify-center text-xs w-full p-1">
+            <span class="text-xl mb-1">📦</span>
+            <span>Pesanan</span>
+        </a>
+        <a href="#data-kas" class="bottom-bar-link flex flex-col items-center justify-center text-xs w-full p-1">
+            <span class="text-xl mb-1">💰</span>
+            <span>Kas</span>
+        </a>
+    </nav>
 
 
     <script>
@@ -260,7 +280,7 @@
                     { 
                         id: 'sate-sapi', name: 'Sate Maranggi Sapi', hargaJual: 30000,
                         hppBreakdown: [{ name: 'Daging Sapi (100gr)', cost: 14000 }, { name: 'Bumbu & Kecap', cost: 5000 }, { name: 'Nasi/Lontong', cost: 2500 }, { name: 'Kemasan & Lainnya', cost: 1500 }],
-                        resep: { C1_label: "Bumbu Marinasi", C1_content: "Bawang Merah: 10 siung\nBawang Putih: 8 siung\nLengkuas: 3 cm\nKetumbar Sangrai: 2 sdt", C2_label: "Sambal", C2_content: "Tomat Merah: 3 buah\nCabai Rawit: 15-20 buah", C3_label: "Langkah Pembuatan", C3_content: "Campur daging dengan bumbu halus.\nMarinasi di kulkas minimal 3 jam."}
+                        resep: { C1_label: "Bumbu Marinasi", C1_content: "Bawang Merah: 10 siung\nBawang Putih: 8 siung\nLenguas: 3 cm\nKetumbar Sangrai: 2 sdt", C2_label: "Sambal", C2_content: "Tomat Merah: 3 buah\nCabai Rawit: 15-20 buah", C3_label: "Langkah Pembuatan", C3_content: "Campur daging dengan bumbu halus.\nMarinasi di kulkas minimal 3 jam."}
                     }
                 ],
                 categories: { Pemasukan: ["Penjualan Harian", "Penjualan Pre-order"], Pengeluaran: ["Bahan Baku", "Sewa Lapak", "Operasional", "Transportasi", "Lain-lain"] }
@@ -273,17 +293,29 @@
             const formatCurrency = (value) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(value);
             const formatNumber = (value) => new Intl.NumberFormat('id-ID').format(value);
             
+            // [PERUBAHAN] DOMElements diperbarui
             const DOMElements = {
-                sidebar: document.getElementById('sidebar'), sidebarOverlay: document.getElementById('sidebar-overlay'), menuBtn: document.getElementById('menu-btn'), headerTitle: document.getElementById('header-title'),
-                sidebarLinks: document.querySelectorAll('.sidebar-link'), contentSections: document.querySelectorAll('.content-section'), targetHarianSlider: document.getElementById('target-harian'),
-                targetHarianValue: document.getElementById('target-harian-value'), targetBulananEl: document.getElementById('target-bulanan'), labaKotorEl: document.getElementById('laba-kotor'),
-                labaBersihEl: document.getElementById('laba-bersih'), kekuranganTargetEl: document.getElementById('kekurangan-target'),
-                transactionList: document.getElementById('transaction-list'), recipeContainer: document.getElementById('recipe-container'), menuAnalysisContainer: document.getElementById('menu-analysis-container'),
-                editTxModal: document.getElementById('edit-tx-modal'), kelolaMenuModal: document.getElementById('kelola-menu-modal'), recipeModal: document.getElementById('recipe-modal'),
-                targetRupiahInput: document.getElementById('target-rupiah'), addRecipeBtn: document.getElementById('add-recipe-btn'),
-                preOrderForm: document.getElementById('pre-order-form'), preOrderList: document.getElementById('pre-order-list'),
-                poProses: document.getElementById('po-proses'), poSelesai: document.getElementById('po-selesai'),
-                // [PERUBAHAN] Menambahkan elemen baru
+                headerTitle: document.getElementById('header-title'),
+                allNavLinks: document.querySelectorAll('.sidebar-link, .bottom-bar-link'),
+                contentSections: document.querySelectorAll('.content-section'), 
+                targetHarianSlider: document.getElementById('target-harian'),
+                targetHarianValue: document.getElementById('target-harian-value'), 
+                targetBulananEl: document.getElementById('target-bulanan'), 
+                labaKotorEl: document.getElementById('laba-kotor'),
+                labaBersihEl: document.getElementById('laba-bersih'), 
+                kekuranganTargetEl: document.getElementById('kekurangan-target'),
+                transactionList: document.getElementById('transaction-list'), 
+                recipeContainer: document.getElementById('recipe-container'), 
+                menuAnalysisContainer: document.getElementById('menu-analysis-container'),
+                editTxModal: document.getElementById('edit-tx-modal'), 
+                kelolaMenuModal: document.getElementById('kelola-menu-modal'), 
+                recipeModal: document.getElementById('recipe-modal'),
+                targetRupiahInput: document.getElementById('target-rupiah'), 
+                addRecipeBtn: document.getElementById('add-recipe-btn'),
+                preOrderForm: document.getElementById('pre-order-form'), 
+                preOrderList: document.getElementById('pre-order-list'),
+                poProses: document.getElementById('po-proses'), 
+                poSelesai: document.getElementById('po-selesai'),
                 addTxModal: document.getElementById('add-tx-modal'),
                 fabAddTx: document.getElementById('fab-add-tx'),
                 txFormTemplate: document.getElementById('transaction-form-template')
@@ -303,8 +335,6 @@
                 if (loadedTransactions) transactions = loadedTransactions;
                 if (loadedPreOrders) preOrders = loadedPreOrders;
             }
-
-            function toggleSidebar() { DOMElements.sidebar.classList.toggle('-translate-x-full'); DOMElements.sidebarOverlay.classList.toggle('hidden'); }
             
             function renderAll() {
                 renderTransactions();
@@ -315,27 +345,36 @@
                 updateDashboard();
             }
 
+            // [PERUBAHAN] Logika navigasi disederhanakan
             function setupNavigation() {
-                DOMElements.menuBtn.addEventListener('click', toggleSidebar);
-                DOMElements.sidebarOverlay.addEventListener('click', toggleSidebar);
-                DOMElements.sidebarLinks.forEach(link => {
+                DOMElements.allNavLinks.forEach(link => {
                     link.addEventListener('click', e => {
                         e.preventDefault();
                         const targetId = link.getAttribute('href').substring(1);
+                        
+                        // Tampilkan section yang dituju
                         DOMElements.contentSections.forEach(s => s.classList.remove('active'));
                         document.getElementById(targetId).classList.add('active');
-                        DOMElements.sidebarLinks.forEach(l => l.classList.remove('active'));
-                        link.classList.add('active');
-                        DOMElements.headerTitle.textContent = link.textContent.trim();
+                        
+                        // Update status aktif untuk SEMUA link navigasi
+                        DOMElements.allNavLinks.forEach(navLink => {
+                            if (navLink.getAttribute('href') === link.getAttribute('href')) {
+                                navLink.classList.add('active');
+                            } else {
+                                navLink.classList.remove('active');
+                            }
+                        });
 
-                        // [PERUBAHAN] Tampilkan/sembunyikan FAB berdasarkan halaman
+                        // Ambil teks dari link sidebar yang sesuai untuk judul header
+                        const correspondingSidebarLink = document.querySelector(`.sidebar-link[href="${link.getAttribute('href')}"]`);
+                        DOMElements.headerTitle.textContent = correspondingSidebarLink.textContent.trim();
+
+                        // Tampilkan/sembunyikan FAB berdasarkan halaman
                         if (targetId === 'data-kas') {
                             DOMElements.fabAddTx.classList.remove('hidden');
                         } else {
                             DOMElements.fabAddTx.classList.add('hidden');
                         }
-
-                        if (window.innerWidth < 768) toggleSidebar();
                     });
                 });
                  // Sembunyikan FAB secara default jika halaman awal bukan Data Kas
@@ -343,6 +382,7 @@
                     DOMElements.fabAddTx.classList.add('hidden');
                 }
             }
+
 
             function populateCategories(selectEl, type) {
                 selectEl.innerHTML = '';
@@ -413,7 +453,6 @@
                 DOMElements.targetHarianValue.textContent = `${requiredDailyPortions} Porsi`;
             }
             
-            // [PERUBAHAN] Fungsi ini dipicu dari form di dalam modal
             function addTransaction(e) {
                 e.preventDefault();
                 const form = e.target;
@@ -437,7 +476,6 @@
                 }
             }
             
-            // [PERUBAHAN] Fungsi baru untuk membuka modal tambah transaksi
             function openAddTxModal() {
                 const modalContent = `
                     <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md m-4">
@@ -806,8 +844,6 @@
                 }
             });
             
-            document.addEventListener('change', e => { if(e.target.matches('.harga-jual-slider')) saveData(); });
-
             document.addEventListener('click', e => {
                 const target = e.target;
                 if(target.matches('.delete-btn')) deleteTransaction(parseInt(target.dataset.id));
@@ -827,7 +863,7 @@
                 }
                 if(target.matches('#add-recipe-btn')) openRecipeModal();
                 if(target.matches('.kelola-resep-btn')) openRecipeModal(target.dataset.id);
-                if(target.matches('.cancel-modal-btn')) target.closest('.modal').classList.add('hidden');
+                if(target.closest('.cancel-modal-btn')) target.closest('.modal').classList.add('hidden');
                 if(target.matches('#delete-recipe-btn')) deleteRecipe(DOMElements.recipeModal.querySelector('#recipe-id').value);
                 if(target.matches('.complete-po-btn')) completePreOrder(parseInt(target.dataset.id));
                 if(target.matches('#add-hpp-item-btn')) {
@@ -849,21 +885,18 @@
                     newItemRow.innerHTML = `<input type="text" value="Bahan Baku per Porsi" class="hpp-item-name w-full bg-stone-50 p-2 rounded border"><input type="number" value="${Math.round(hasil)}" class="hpp-item-cost w-32 bg-stone-50 p-2 rounded border"><button type="button" class="delete-hpp-item-btn text-red-500 hover:text-red-700 font-bold p-1">✕</button>`;
                     container.appendChild(newItemRow);
                 }
-                // [PERUBAHAN] Listener untuk FAB
                 if(target.closest('#fab-add-tx')) openAddTxModal();
             });
 
             document.addEventListener('submit', e => {
                 e.preventDefault();
                 const target = e.target;
-                // [PERUBAHAN] Form transaksi tidak lagi ditangani di sini
                 if(target.matches('#edit-tx-form')) saveEditTransaction(e);
                 if(target.matches('#kelola-menu-form')) saveKelolaMenu(e);
                 if(target.matches('#recipe-form')) saveRecipe(e);
                 if(target.matches('#pre-order-form')) addPreOrder(e);
             });
-
-            DOMElements.targetHarianSlider.addEventListener('input', () => { DOMElements.targetHarianValue.textContent = `${DOMElements.targetHarianSlider.value} Porsi`; });
+            
             DOMElements.targetHarianSlider.addEventListener('change', () => {
                 const dailyPortions = parseInt(DOMElements.targetHarianSlider.value);
                 let avgPrice = businessData.menu.reduce((a, i) => a + i.hargaJual, 0) / businessData.menu.length;
