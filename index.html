@@ -3,16 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dasbor Bisnis Sate Maranggi</title>
+    <title>Maranggiin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Warm Culinary (Stone, Amber) -->
-    <!-- Application Structure Plan: A multi-section single-page application with a fixed sidebar for desktop and a hamburger menu for mobile. The structure is task-oriented: 1) Bisnis Plan (Strategic Overview), 2) Panduan Resep (Operational Reference), 3) Dashboard Penjualan (Performance Tracking), 4) Data Kas (Daily Data Entry). This separation clarifies the user flow and makes the tool more powerful for day-to-day management. -->
-    <!-- Visualization & Content Choices: Report Info: Sales Performance -> Goal: Track Progress -> Viz/Method: Dynamic stat cards and a Chart.js gauge/doughnut chart -> Interaction: Data is automatically updated from the 'Data Kas' entries. Justification: Provides an immediate, at-a-glance view of performance against targets. Report Info: Cash Flow -> Goal: Record Transactions -> Viz/Method: HTML form and a dynamic table -> Interaction: User can add and delete entries, which then update the entire dashboard. Justification: This is the core engine for making the dashboard a practical daily tool. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body { font-family: 'Inter', sans-serif; }
         .content-section { display: none; }
@@ -21,15 +17,21 @@
         #sidebar-overlay { transition: opacity 0.3s ease-in-out; }
         .modal { transition: opacity 0.3s ease-in-out; }
         .chart-container { position: relative; width: 100%; height: 300px; max-height: 40vh; margin-top: 2rem; }
+        
+        /* [PERUBAHAN] Menambahkan umpan balik visual saat disentuh */
+        .sidebar-link:active, 
+        button:active {
+            transform: scale(0.95);
+            transition: transform 0.1s ease-in-out;
+        }
     </style>
 </head>
 <body class="bg-stone-100 text-stone-800">
 
     <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden"></div>
     <div class="flex">
-        <!-- Sidebar -->
         <aside id="sidebar" class="bg-stone-800 text-white w-64 min-h-screen p-4 fixed md:relative transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-30">
-            <h1 class="text-2xl font-bold text-amber-400 mb-8 text-center">Sate Maranggi</h1>
+            <h1 class="text-2xl font-bold text-amber-400 mb-8 text-center">Maranggi.in</h1>
             <nav class="flex flex-col space-y-2">
                 <a href="#bisnis-plan" class="sidebar-link active flex items-center py-2 px-4 rounded-lg hover:bg-amber-500 transition">
                     <span class="mr-3">📄</span> Bisnis Plan
@@ -49,7 +51,6 @@
             </nav>
         </aside>
 
-        <!-- Main Content -->
         <div class="flex-1">
             <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-10 shadow-sm flex items-center p-4 md:hidden">
                 <button id="menu-btn" class="text-stone-800 mr-4">
@@ -58,38 +59,31 @@
                 <h2 id="header-title" class="text-xl font-bold text-amber-600">Bisnis Plan</h2>
             </header>
 
-            <main class="p-6 md:p-8 pb-16">
-                <!-- Section: Bisnis Plan -->
-                <section id="bisnis-plan" class="content-section active">
-                    <h2 class="text-3xl md:text-4xl font-bold mb-6">Rencana Bisnis Strategis</h2>
+            <main class="p-6 md:p-8 pb-24"> <section id="bisnis-plan" class="content-section active">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-6">Rencana Bisnis</h2>
                     <div class="space-y-8">
                         <div class="bg-white p-6 rounded-lg shadow">
-                            <h3 class="text-2xl font-bold mb-4">Analisis Menu & Titik Impas (BEP)</h3>
+                            <h3 class="text-2xl font-bold mb-4">Analisis Menu & Break Event Point (BEP)</h3>
                             <div id="menu-analysis-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <!-- Konten Analisis Menu Dibuat oleh JavaScript -->
-                            </div>
+                                </div>
                         </div>
                         <div class="bg-white p-6 rounded-lg shadow">
                             <h3 class="text-2xl font-bold mb-4">Rincian Modal Awal & Operasional</h3>
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                <!-- Biaya Investasi -->
                                 <div>
                                     <h4 class="text-xl font-semibold mb-3">Biaya Investasi (Sekali Bayar)</h4>
                                     <div id="investment-cost-container" class="space-y-2">
-                                        <!-- Diisi oleh JS -->
-                                    </div>
+                                        </div>
                                     <button id="add-investment-btn" class="mt-3 w-full text-sm bg-blue-100 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 transition">+ Tambah Biaya Investasi</button>
                                     <div class="flex justify-between font-bold text-lg mt-4 border-t pt-2">
                                         <span>Total Investasi:</span>
                                         <span id="total-investment">Rp 0</span>
                                     </div>
                                 </div>
-                                <!-- Biaya Operasional -->
                                 <div>
                                     <h4 class="text-xl font-semibold mb-3">Biaya Operasional (Bulanan)</h4>
                                     <div id="operational-cost-container" class="space-y-2">
-                                        <!-- Diisi oleh JS -->
-                                    </div>
+                                        </div>
                                     <button id="add-operational-btn" class="mt-3 w-full text-sm bg-blue-100 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 transition">+ Tambah Biaya Operasional</button>
                                     <div class="flex justify-between font-bold text-lg mt-4 border-t pt-2">
                                         <span>Total Operasional/Bulan:</span>
@@ -106,18 +100,15 @@
                     </div>
                 </section>
 
-                <!-- Section: Panduan Resep -->
                 <section id="resep" class="content-section">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-3xl md:text-4xl font-bold">Panduan Resep</h2>
                         <button id="add-recipe-btn" class="bg-amber-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-amber-600 transition">+ Tambah Resep</button>
                     </div>
                     <div id="recipe-container" class="space-y-8">
-                        <!-- Konten Resep Dibuat oleh JavaScript -->
-                    </div>
+                        </div>
                 </section>
 
-                <!-- Section: Dashboard Penjualan -->
                 <section id="dashboard" class="content-section">
                     <h2 class="text-3xl md:text-4xl font-bold mb-6">Dashboard Penjualan</h2>
                     <div class="bg-white p-6 rounded-lg shadow">
@@ -164,7 +155,6 @@
                     </div>
                 </section>
                 
-                <!-- Section: Pre-order -->
                 <section id="pre-order" class="content-section">
                     <h2 class="text-3xl md:text-4xl font-bold mb-6">Data Pesanan (Pre-order)</h2>
                     <div class="bg-white p-6 rounded-lg shadow mb-8">
@@ -204,15 +194,13 @@
                         </div>
                     </div>
                     <div id="pre-order-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                         <!-- Diisi oleh JS -->
-                    </div>
+                         </div>
                 </section>
 
-                <!-- Section: Data Kas -->
                 <section id="data-kas" class="content-section">
                     <h2 class="text-3xl md:text-4xl font-bold mb-6">Data Kas</h2>
-                    <div class="bg-white p-6 rounded-lg shadow mb-8">
-                        <h3 class="text-xl font-bold mb-4">Formulir Transaksi</h3>
+                    
+                    <div id="transaction-form-template" class="hidden">
                         <form id="transaction-form" class="space-y-4">
                             <div>
                                 <label for="tx-date" class="block text-sm font-bold text-stone-700 mb-1">Tanggal</label>
@@ -238,38 +226,28 @@
                             <button type="submit" class="w-full bg-amber-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-amber-600 transition">Tambah Transaksi</button>
                         </form>
                     </div>
+
                     <div id="transaction-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <!-- Riwayat Transaksi Card-based -->
-                    </div>
+                        </div>
                 </section>
             </main>
         </div>
     </div>
     
-    <!-- All Modals -->
-    <div id="edit-tx-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-40 hidden items-center justify-center"> <!-- Modal Edit Transaksi --> </div>
-    <div id="kelola-menu-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-40 hidden items-center justify-center"> <!-- Modal Kelola Menu --> </div>
-    <div id="recipe-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-40 hidden items-center justify-center"> <!-- Modal Resep --> </div>
+    <div id="edit-tx-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-40 hidden items-center justify-center"> </div>
+    <div id="kelola-menu-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-40 hidden items-center justify-center"> </div>
+    <div id="recipe-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-40 hidden items-center justify-center"> </div>
+    
+    <div id="add-tx-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-40 hidden items-center justify-center p-4"></div>
 
-    <script type="module">
-        /* ==== Firebase Imports & Setup ==== */
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    <button id="fab-add-tx" class="fixed bottom-6 right-6 bg-amber-500 text-white rounded-full p-4 shadow-lg hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-400 z-20 transition transform hover:scale-110 active:scale-95">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+    </button>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyC_Z8QS_mNbExzIoppP_0EbABM4Y1eeVTQ",
-            authDomain: "dasbor-maranggiin.firebaseapp.com",
-            projectId: "dasbor-maranggiin",
-            storageBucket: "dasbor-maranggiin.firebasestorage.app",
-            messagingSenderId: "476865235556",
-            appId: "1:476865235556:web:f1dd8a2dfd93c623b1ad71",
-            measurementId: "G-QMD7ZLZ20Z"
-        };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        /* ==== App Code (as requested, lengkap) ==== */
+    <script>
         document.addEventListener('DOMContentLoaded', function () {
             let businessData = {
                 modal: {
@@ -299,16 +277,18 @@
                 sidebar: document.getElementById('sidebar'), sidebarOverlay: document.getElementById('sidebar-overlay'), menuBtn: document.getElementById('menu-btn'), headerTitle: document.getElementById('header-title'),
                 sidebarLinks: document.querySelectorAll('.sidebar-link'), contentSections: document.querySelectorAll('.content-section'), targetHarianSlider: document.getElementById('target-harian'),
                 targetHarianValue: document.getElementById('target-harian-value'), targetBulananEl: document.getElementById('target-bulanan'), labaKotorEl: document.getElementById('laba-kotor'),
-                labaBersihEl: document.getElementById('laba-bersih'), kekuranganTargetEl: document.getElementById('kekurangan-target'), txForm: document.getElementById('transaction-form'),
-                txDate: document.getElementById('tx-date'), txType: document.getElementById('tx-type'), txCategory: document.getElementById('tx-category'), txAmount: document.getElementById('tx-amount'),
+                labaBersihEl: document.getElementById('laba-bersih'), kekuranganTargetEl: document.getElementById('kekurangan-target'),
                 transactionList: document.getElementById('transaction-list'), recipeContainer: document.getElementById('recipe-container'), menuAnalysisContainer: document.getElementById('menu-analysis-container'),
                 editTxModal: document.getElementById('edit-tx-modal'), kelolaMenuModal: document.getElementById('kelola-menu-modal'), recipeModal: document.getElementById('recipe-modal'),
                 targetRupiahInput: document.getElementById('target-rupiah'), addRecipeBtn: document.getElementById('add-recipe-btn'),
                 preOrderForm: document.getElementById('pre-order-form'), preOrderList: document.getElementById('pre-order-list'),
-                poProses: document.getElementById('po-proses'), poSelesai: document.getElementById('po-selesai')
+                poProses: document.getElementById('po-proses'), poSelesai: document.getElementById('po-selesai'),
+                // [PERUBAHAN] Menambahkan elemen baru
+                addTxModal: document.getElementById('add-tx-modal'),
+                fabAddTx: document.getElementById('fab-add-tx'),
+                txFormTemplate: document.getElementById('transaction-form-template')
             };
 
-            /* ===== Local save/load (tetap ada) ===== */
             function saveData() {
                 localStorage.setItem('businessData', JSON.stringify(businessData));
                 localStorage.setItem('transactions', JSON.stringify(transactions));
@@ -347,9 +327,21 @@
                         DOMElements.sidebarLinks.forEach(l => l.classList.remove('active'));
                         link.classList.add('active');
                         DOMElements.headerTitle.textContent = link.textContent.trim();
+
+                        // [PERUBAHAN] Tampilkan/sembunyikan FAB berdasarkan halaman
+                        if (targetId === 'data-kas') {
+                            DOMElements.fabAddTx.classList.remove('hidden');
+                        } else {
+                            DOMElements.fabAddTx.classList.add('hidden');
+                        }
+
                         if (window.innerWidth < 768) toggleSidebar();
                     });
                 });
+                 // Sembunyikan FAB secara default jika halaman awal bukan Data Kas
+                if (!document.getElementById('data-kas').classList.contains('active')) {
+                    DOMElements.fabAddTx.classList.add('hidden');
+                }
             }
 
             function populateCategories(selectEl, type) {
@@ -381,9 +373,9 @@
                             </div>
                             <p class="font-bold text-lg ${isPemasukan ? 'text-green-600' : 'text-red-600'}">${isPemasukan ? '+' : '-'} ${formatCurrency(tx.amount)}</p>
                         </div>
-                        <div class="text-right mt-2">
-                            <button data-id="${tx.id}" class="edit-btn text-blue-500 hover:underline text-xs font-semibold">Edit</button>
-                            <button data-id="${tx.id}" class="delete-btn text-red-500 hover:underline text-xs font-semibold ml-2">Hapus</button>
+                        <div class="text-right mt-3 flex justify-end space-x-2">
+                            <button data-id="${tx.id}" class="edit-btn text-xs font-semibold bg-blue-100 text-blue-800 px-3 py-1 rounded-full hover:bg-blue-200 transition">Edit</button>
+                            <button data-id="${tx.id}" class="delete-btn text-xs font-semibold bg-red-100 text-red-800 px-3 py-1 rounded-full hover:bg-red-200 transition">Hapus</button>
                         </div>
                     `;
                     container.appendChild(card);
@@ -420,49 +412,58 @@
                 DOMElements.targetHarianSlider.value = requiredDailyPortions;
                 DOMElements.targetHarianValue.textContent = `${requiredDailyPortions} Porsi`;
             }
-
-            /* ===== Firestore CRUD ===== */
-            async function saveTransactionFB(tx) { await addDoc(collection(db, "transactions"), tx); }
-            async function getTransactionsFB() {
-                const snap = await getDocs(collection(db, "transactions"));
-                return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            }
-            async function updateTransactionFB(id, tx) { await updateDoc(doc(db, "transactions", id), tx); }
-            async function deleteTransactionFB(id) { await deleteDoc(doc(db, "transactions", id)); }
-
-            async function savePreOrderFB(po) { await addDoc(collection(db, "preorders"), po); }
-            async function getPreOrdersFB() {
-                const snap = await getDocs(collection(db, "preorders"));
-                return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            }
-            async function completePreOrderFB(id, order) {
-                await updateDoc(doc(db, "preorders", id), { status: "selesai" });
-                await addDoc(collection(db, "transactions"), {
-                    date: new Date().toISOString().split('T')[0],
-                    type: "Pemasukan",
-                    category: "Penjualan Pre-order",
-                    amount: order.amount
+            
+            // [PERUBAHAN] Fungsi ini dipicu dari form di dalam modal
+            function addTransaction(e) {
+                e.preventDefault();
+                const form = e.target;
+                transactions.push({ 
+                    id: Date.now(), 
+                    date: form.querySelector('#tx-date').value, 
+                    type: form.querySelector('#tx-type').value, 
+                    category: form.querySelector('#tx-category').value, 
+                    amount: parseInt(form.querySelector('#tx-amount').value) || 0 
                 });
+                saveData(); 
+                renderTransactions(); 
+                updateDashboard();
+                DOMElements.addTxModal.classList.add('hidden'); // Tutup modal
             }
 
-            /* ===== App Actions (diubah agar pakai Firestore) ===== */
-            async function addTransaction(e) {
-                const tx = { 
-                    date: DOMElements.txDate.value, 
-                    type: DOMElements.txType.value, 
-                    category: DOMElements.txCategory.value, 
-                    amount: parseInt(DOMElements.txAmount.value) || 0 
-                };
-                await saveTransactionFB(tx);
-                transactions = await getTransactionsFB();
-                saveData(); renderTransactions(); updateDashboard(); DOMElements.txForm.reset(); DOMElements.txDate.valueAsDate = new Date();
+            function deleteTransaction(id) {
+                if (confirm('Anda yakin ingin menghapus transaksi ini?')) {
+                    transactions = transactions.filter(tx => tx.id !== id);
+                    saveData(); renderTransactions(); updateDashboard();
+                }
             }
             
-            async function deleteTransaction(id) {
-                await deleteTransactionFB(id);
-                transactions = await getTransactionsFB();
-                saveData(); renderTransactions(); updateDashboard();
+            // [PERUBAHAN] Fungsi baru untuk membuka modal tambah transaksi
+            function openAddTxModal() {
+                const modalContent = `
+                    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md m-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-2xl font-bold">Tambah Transaksi</h3>
+                            <button type="button" class="cancel-modal-btn text-2xl font-bold text-stone-500 hover:text-stone-800">&times;</button>
+                        </div>
+                        ${DOMElements.txFormTemplate.innerHTML}
+                    </div>
+                `;
+                DOMElements.addTxModal.innerHTML = modalContent;
+                DOMElements.addTxModal.classList.remove('hidden');
+                DOMElements.addTxModal.classList.add('flex');
+                
+                const formInModal = DOMElements.addTxModal.querySelector('#transaction-form');
+                formInModal.addEventListener('submit', addTransaction);
+                
+                const typeSelectInModal = formInModal.querySelector('#tx-type');
+                const categorySelectInModal = formInModal.querySelector('#tx-category');
+                
+                populateCategories(categorySelectInModal, typeSelectInModal.value);
+                typeSelectInModal.addEventListener('change', () => populateCategories(categorySelectInModal, typeSelectInModal.value));
+                
+                formInModal.querySelector('#tx-date').valueAsDate = new Date();
             }
+
 
             function openEditModal(id) {
                 const tx = transactions.find(t => t.id === id);
@@ -470,11 +471,11 @@
                 <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md m-4">
                     <h3 class="text-2xl font-bold mb-4">Edit Transaksi</h3>
                     <form id="edit-tx-form">
-                        <input type="hidden" id="edit-tx-id" value="\${tx.id}">
+                        <input type="hidden" id="edit-tx-id" value="${tx.id}">
                         <div class="space-y-4">
-                            <div><label for="edit-tx-date" class="block text-sm font-bold text-stone-700 mb-1">Tanggal</label><input type="date" id="edit-tx-date" value="\${tx.date}" class="bg-stone-50 mt-1 block w-full rounded-md border-stone-300 shadow-sm" required></div>
+                            <div><label for="edit-tx-date" class="block text-sm font-bold text-stone-700 mb-1">Tanggal</label><input type="date" id="edit-tx-date" value="${tx.date}" class="bg-stone-50 mt-1 block w-full rounded-md border-stone-300 shadow-sm" required></div>
                             <div><label for="edit-tx-category" class="block text-sm font-bold text-stone-700 mb-1">Kategori</label><select id="edit-tx-category" class="bg-stone-50 mt-1 block w-full rounded-md border-stone-300 shadow-sm"></select></div>
-                            <div><label for="edit-tx-amount" class="block text-sm font-bold text-stone-700 mb-1">Jumlah (Rp)</label><input type="number" id="edit-tx-amount" value="\${tx.amount}" class="bg-stone-50 mt-1 block w-full rounded-md border-stone-300 shadow-sm" required></div>
+                            <div><label for="edit-tx-amount" class="block text-sm font-bold text-stone-700 mb-1">Jumlah (Rp)</label><input type="number" id="edit-tx-amount" value="${tx.amount}" class="bg-stone-50 mt-1 block w-full rounded-md border-stone-300 shadow-sm" required></div>
                         </div>
                         <div class="mt-6 flex justify-end space-x-3">
                             <button type="button" class="cancel-modal-btn bg-stone-200 text-stone-800 font-bold py-2 px-4 rounded-lg hover:bg-stone-300">Batal</button>
@@ -489,13 +490,13 @@
                 DOMElements.editTxModal.classList.add('flex');
             }
 
-            async function saveEditTransaction(e) {
-                const id = e.target.querySelector('#edit-tx-id').value;
-                const newDate = e.target.querySelector('#edit-tx-date').value;
-                const newCategory = e.target.querySelector('#edit-tx-category').value;
-                const newAmount = parseInt(e.target.querySelector('#edit-tx-amount').value) || 0;
-                await updateTransactionFB(id, { date: newDate, category: newCategory, amount: newAmount });
-                transactions = await getTransactionsFB();
+            function saveEditTransaction(e) {
+                e.preventDefault();
+                const id = parseInt(e.target.querySelector('#edit-tx-id').value);
+                const txIndex = transactions.findIndex(t => t.id === id);
+                transactions[txIndex].date = e.target.querySelector('#edit-tx-date').value;
+                transactions[txIndex].category = e.target.querySelector('#edit-tx-category').value;
+                transactions[txIndex].amount = parseInt(e.target.querySelector('#edit-tx-amount').value) || 0;
                 saveData(); renderTransactions(); updateDashboard();
                 DOMElements.editTxModal.classList.add('hidden');
             }
@@ -529,16 +530,16 @@
                     <h3 class="text-xl md:text-2xl font-bold mb-4">${isNew ? 'Tambah Resep Baru' : 'Edit Resep'}</h3>
                     <form id="recipe-form" class="space-y-4 max-h-[80vh] overflow-y-auto pr-4">
                         <input type="hidden" id="recipe-id" value="${menu.id}">
-                        <div><label for="recipe-name" class="block text-sm font-bold text-stone-700 mb-1">Nama Menu</label><input type="text" id="recipe-name" value="${menu.name}" class="bg-stone-50 w-full rounded" required></div>
+                        <div><label for="recipe-name" class="block text-sm font-bold text-stone-700 mb-1">Nama Menu</label><input type="text" id="recipe-name" value="${menu.name}" class="bg-stone-50 w-full rounded p-2" required></div>
                         
-                        <div><label class="block text-sm font-bold text-stone-700 mb-1">Judul Komponen 1</label><input type="text" id="recipe-c1-label" value="${menu.resep.C1_label || ''}" class="bg-stone-50 w-full rounded"></div>
-                        <div><label for="recipe-c1-content" class="block text-sm font-bold text-stone-700 mb-1">Isi Komponen 1 (satu baris per item)</label><textarea id="recipe-c1-content" rows="5" class="bg-stone-50 w-full rounded">${menu.resep.C1_content || ''}</textarea></div>
+                        <div><label class="block text-sm font-bold text-stone-700 mb-1">Judul Komponen 1</label><input type="text" id="recipe-c1-label" value="${menu.resep.C1_label || ''}" class="bg-stone-50 w-full rounded p-2"></div>
+                        <div><label for="recipe-c1-content" class="block text-sm font-bold text-stone-700 mb-1">Isi Komponen 1 (satu baris per item)</label><textarea id="recipe-c1-content" rows="5" class="bg-stone-50 w-full rounded p-2">${menu.resep.C1_content || ''}</textarea></div>
                         
-                        <div><label class="block text-sm font-bold text-stone-700 mb-1">Judul Komponen 2</label><input type="text" id="recipe-c2-label" value="${menu.resep.C2_label || ''}" class="bg-stone-50 w-full rounded"></div>
-                        <div><label for="recipe-c2-content" class="block text-sm font-bold text-stone-700 mb-1">Isi Komponen 2 (satu baris per item)</label><textarea id="recipe-c2-content" rows="3" class="bg-stone-50 w-full rounded">${menu.resep.C2_content || ''}</textarea></div>
+                        <div><label class="block text-sm font-bold text-stone-700 mb-1">Judul Komponen 2</label><input type="text" id="recipe-c2-label" value="${menu.resep.C2_label || ''}" class="bg-stone-50 w-full rounded p-2"></div>
+                        <div><label for="recipe-c2-content" class="block text-sm font-bold text-stone-700 mb-1">Isi Komponen 2 (satu baris per item)</label><textarea id="recipe-c2-content" rows="3" class="bg-stone-50 w-full rounded p-2">${menu.resep.C2_content || ''}</textarea></div>
                         
-                        <div><label class="block text-sm font-bold text-stone-700 mb-1">Judul Langkah</label><input type="text" id="recipe-c3-label" value="${menu.resep.C3_label || ''}" class="bg-stone-50 w-full rounded"></div>
-                        <div><label for="recipe-c3-content" class="block text-sm font-bold text-stone-700 mb-1">Isi Langkah (satu baris per item)</label><textarea id="recipe-c3-content" rows="5" class="bg-stone-50 w-full rounded">${menu.resep.C3_content || ''}</textarea></div>
+                        <div><label class="block text-sm font-bold text-stone-700 mb-1">Judul Langkah</label><input type="text" id="recipe-c3-label" value="${menu.resep.C3_label || ''}" class="bg-stone-50 w-full rounded p-2"></div>
+                        <div><label for="recipe-c3-content" class="block text-sm font-bold text-stone-700 mb-1">Isi Langkah (satu baris per item)</label><textarea id="recipe-c3-content" rows="5" class="bg-stone-50 w-full rounded p-2">${menu.resep.C3_content || ''}</textarea></div>
                         
                         <div class="flex justify-between items-center pt-4">
                             <div>${!isNew ? '<button type="button" id="delete-recipe-btn" class="bg-red-100 text-red-700 font-bold py-2 px-4 rounded-lg hover:bg-red-200">Hapus Resep Ini</button>' : '<div></div>'}</div>
@@ -554,6 +555,7 @@
             }
 
             function saveRecipe(e) {
+                e.preventDefault();
                 const id = e.target.querySelector('#recipe-id').value;
                 const name = e.target.querySelector('#recipe-name').value;
                 const C1_label = e.target.querySelector('#recipe-c1-label').value;
@@ -677,6 +679,7 @@
             }
             
             function saveKelolaMenu(e) {
+                e.preventDefault();
                 const menuId = e.target.querySelector('#kelola-menu-id').value;
                 const menu = businessData.menu.find(m => m.id === menuId);
                 
@@ -717,27 +720,28 @@
                 DOMElements.poSelesai.textContent = preOrders.filter(o => o.status === 'selesai').length;
             }
 
-            async function addPreOrder(e) {
+            function addPreOrder(e) {
+                e.preventDefault();
                 const newOrder = {
+                    id: Date.now(),
                     customer: DOMElements.preOrderForm.querySelector('#po-customer').value,
                     date: DOMElements.preOrderForm.querySelector('#po-date').value,
                     details: DOMElements.preOrderForm.querySelector('#po-details').value,
                     amount: parseInt(DOMElements.preOrderForm.querySelector('#po-amount').value) || 0,
                     status: 'proses'
                 };
-                await savePreOrderFB(newOrder);
-                preOrders = await getPreOrdersFB();
+                preOrders.push(newOrder);
                 saveData();
                 renderPreOrders();
                 DOMElements.preOrderForm.reset();
             }
 
-            async function completePreOrder(id) {
-                const order = preOrders.find(o => o.id === id);
-                if (order) {
-                    await completePreOrderFB(id, order);
-                    preOrders = await getPreOrdersFB();
-                    transactions = await getTransactionsFB();
+            function completePreOrder(id) {
+                const orderIndex = preOrders.findIndex(o => o.id === id);
+                if (orderIndex > -1) {
+                    preOrders[orderIndex].status = 'selesai';
+                    const order = preOrders[orderIndex];
+                    transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], type: 'Pemasukan', category: 'Penjualan Pre-order', amount: order.amount });
                     saveData();
                     renderPreOrders();
                     renderTransactions();
@@ -804,10 +808,10 @@
             
             document.addEventListener('change', e => { if(e.target.matches('.harga-jual-slider')) saveData(); });
 
-            document.addEventListener('click', async e => {
+            document.addEventListener('click', e => {
                 const target = e.target;
-                if(target.matches('.delete-btn')) await deleteTransaction(target.dataset.id);
-                if(target.matches('.edit-btn')) openEditModal(target.dataset.id);
+                if(target.matches('.delete-btn')) deleteTransaction(parseInt(target.dataset.id));
+                if(target.matches('.edit-btn')) openEditModal(parseInt(target.dataset.id));
                 if(target.matches('.kelola-menu-btn')) openKelolaMenuModal(target.dataset.id);
                 if(target.matches('.delete-capital-item-btn')) {
                     const row = target.closest('.capital-item-row');
@@ -825,7 +829,7 @@
                 if(target.matches('.kelola-resep-btn')) openRecipeModal(target.dataset.id);
                 if(target.matches('.cancel-modal-btn')) target.closest('.modal').classList.add('hidden');
                 if(target.matches('#delete-recipe-btn')) deleteRecipe(DOMElements.recipeModal.querySelector('#recipe-id').value);
-                if(target.matches('.complete-po-btn')) await completePreOrder(target.dataset.id);
+                if(target.matches('.complete-po-btn')) completePreOrder(parseInt(target.dataset.id));
                 if(target.matches('#add-hpp-item-btn')) {
                     const container = target.closest('form').querySelector('#hpp-items-container');
                     const newItemRow = document.createElement('div');
@@ -845,19 +849,20 @@
                     newItemRow.innerHTML = `<input type="text" value="Bahan Baku per Porsi" class="hpp-item-name w-full bg-stone-50 p-2 rounded border"><input type="number" value="${Math.round(hasil)}" class="hpp-item-cost w-32 bg-stone-50 p-2 rounded border"><button type="button" class="delete-hpp-item-btn text-red-500 hover:text-red-700 font-bold p-1">✕</button>`;
                     container.appendChild(newItemRow);
                 }
+                // [PERUBAHAN] Listener untuk FAB
+                if(target.closest('#fab-add-tx')) openAddTxModal();
             });
 
-            document.addEventListener('submit', async e => {
+            document.addEventListener('submit', e => {
                 e.preventDefault();
                 const target = e.target;
-                if(target.matches('#transaction-form')) await addTransaction(e);
-                if(target.matches('#edit-tx-form')) await saveEditTransaction(e);
+                // [PERUBAHAN] Form transaksi tidak lagi ditangani di sini
+                if(target.matches('#edit-tx-form')) saveEditTransaction(e);
                 if(target.matches('#kelola-menu-form')) saveKelolaMenu(e);
                 if(target.matches('#recipe-form')) saveRecipe(e);
-                if(target.matches('#pre-order-form')) await addPreOrder(e);
+                if(target.matches('#pre-order-form')) addPreOrder(e);
             });
 
-            DOMElements.txType.addEventListener('change', () => populateCategories(DOMElements.txCategory, DOMElements.txType.value));
             DOMElements.targetHarianSlider.addEventListener('input', () => { DOMElements.targetHarianValue.textContent = `${DOMElements.targetHarianSlider.value} Porsi`; });
             DOMElements.targetHarianSlider.addEventListener('change', () => {
                 const dailyPortions = parseInt(DOMElements.targetHarianSlider.value);
@@ -869,19 +874,12 @@
                 saveData();
             });
 
-            async function initialize() {
+            function initialize() {
                 loadData();
                 setupNavigation();
-                DOMElements.txDate.valueAsDate = new Date();
                 DOMElements.preOrderForm.querySelector('#po-date').valueAsDate = new Date();
-                populateCategories(DOMElements.txCategory, 'Pemasukan');
                 DOMElements.targetRupiahInput.value = formatNumber(businessData.targetBulananRp);
                 createSalesTrendChart();
-
-                // Fetch data dari Firestore lalu render
-                transactions = await getTransactionsFB();
-                preOrders = await getPreOrdersFB();
-
                 renderAll();
                 updateTargetSlider();
             }
@@ -891,5 +889,3 @@
     </script>
 </body>
 </html>
-```
-
